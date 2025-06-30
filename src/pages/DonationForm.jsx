@@ -4,7 +4,6 @@ import {
   collection,
   addDoc,
   getDoc,
-  doc,
   serverTimestamp,
 } from "firebase/firestore";
 import { generateReceiptPDF } from "../utils/generateReceiptPDF";
@@ -29,22 +28,39 @@ const DonationForm = () => {
     e.preventDefault();
 
     try {
+      // 1. Save donation to Firestore
       const docRef = await addDoc(collection(db, "donations"), {
         ...form,
         timestamp: serverTimestamp(),
       });
 
+      // 2. Fetch full document
       const savedDoc = await getDoc(docRef);
       const savedData = { id: docRef.id, ...savedDoc.data() };
 
+      // 3. Generate PDF and upload to Firebase Storage
       const receiptBlobUrl = await generateReceiptPDF(savedData);
       setReceiptLink(receiptBlobUrl);
 
-      const message = `🙏 Thank you ${form.fullName} for donating ₹${form.amount}! Your receipt: ${receiptBlobUrl}`;
+      // 4. Marathi thank-you message with dynamic Ganpati Bappa phrase
+      const ganpatiPhrases = [
+        "गणपती बाप्पा मोरया! 🍀",
+        "मंगलमूर्ती मोरया! 🙏",
+        "सिद्धिविनायकाचा आशीर्वाद सदैव तुमच्यावर राहो! 🌺",
+        "गणराज गजानन जय हो! 🌟",
+        "बाप्पाच्या चरणी कृतज्ञता! 🕉️",
+      ];
+      const randomPhrase =
+        ganpatiPhrases[Math.floor(Math.random() * ganpatiPhrases.length)];
+
+      const message = `🙏 ${form.fullName} यांनी ₹${form.amount} चे योगदान दिले!\n${randomPhrase}\n📄 तुमची पावती receipt 👉 ${receiptBlobUrl}`;
+
+      // 5. Open SMS app with message
       window.location.href = `sms:${form.mobile}?body=${encodeURIComponent(
         message
       )}`;
 
+      // 6. Reset form
       setForm({
         fullName: "",
         mobile: "",

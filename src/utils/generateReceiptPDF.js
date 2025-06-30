@@ -1,5 +1,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid"; // for unique file names
 
 export const generateReceiptPDF = async (donationData) => {
   const {
@@ -20,18 +22,16 @@ export const generateReceiptPDF = async (donationData) => {
       })
     : "N/A";
 
-  // Create a hidden receipt container
+  // Hidden receipt container
   const receipt = document.createElement("div");
   receipt.style.width = "700px";
   receipt.style.padding = "40px";
   receipt.style.position = "relative";
   receipt.style.fontFamily = "'Georgia', serif";
-  receipt.style.boxSizing = "border-box";
   receipt.style.border = "2px solid #f97316";
   receipt.style.borderRadius = "12px";
-  receipt.style.backgroundColor = "#fff"; // keep this to make content readable
+  receipt.style.backgroundColor = "#fff";
 
-  // Add background image as an absolutely positioned div
   const bgDiv = document.createElement("div");
   bgDiv.style.position = "absolute";
   bgDiv.style.top = 0;
@@ -39,10 +39,9 @@ export const generateReceiptPDF = async (donationData) => {
   bgDiv.style.width = "100%";
   bgDiv.style.height = "100%";
   bgDiv.style.zIndex = 0;
-  bgDiv.style.opacity = "0.06"; // lower for more transparency
+  bgDiv.style.opacity = "0.06";
   bgDiv.innerHTML = `<img src="/bg-mahabharat.png" style="width:100%; height:100%; object-fit:cover;" />`;
 
-  // Content layer
   const contentDiv = document.createElement("div");
   contentDiv.style.position = "relative";
   contentDiv.style.zIndex = 1;
@@ -72,19 +71,24 @@ export const generateReceiptPDF = async (donationData) => {
     </p>
   `;
 
-  // Assemble all
   receipt.appendChild(bgDiv);
   receipt.appendChild(contentDiv);
   document.body.appendChild(receipt);
 
-  // Convert to canvas
   const canvas = await html2canvas(receipt);
   const imgData = canvas.toDataURL("image/png");
-
   const pdf = new jsPDF();
   pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
-  const blobUrl = pdf.output("bloburl");
+  const pdfBlob = pdf.output("blob");
 
   document.body.removeChild(receipt);
-  return blobUrl;
+
+  // Upload to Firebase Storage
+  const storage = getStorage();
+  const fileName = `receipts/${uuidv4()}-${fullName}.pdf`;
+  const storageRef = ref(storage, fileName);
+  await uploadBytes(storageRef, pdfBlob);
+  const downloadURL = await getDownloadURL(storageRef);
+
+  return downloadURL; // you can now send this via SMS
 };
