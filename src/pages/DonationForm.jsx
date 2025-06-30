@@ -59,7 +59,7 @@ const DonationForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-start pt-8 justify-center px-4 pb-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 space-y-6">
         <h2 className="text-3xl font-bold text-orange-700 text-center">
           🪔 Donation Form
@@ -135,7 +135,7 @@ const DonationForm = () => {
         </form>
 
         {receiptLink && (
-          <div className="mt-4 text-center text-green-700 font-medium text-sm">
+          <div className="text-center text-green-700 font-medium text-sm py-2">
             ✅ Receipt created:{" "}
             <a
               href={receiptLink}
