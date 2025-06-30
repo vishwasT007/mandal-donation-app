@@ -10,7 +10,6 @@ const AdminPanel = () => {
   const { user } = useAuth();
   const [donations, setDonations] = useState([]);
 
-  // 🔄 Fetch all donations
   useEffect(() => {
     const fetchDonations = async () => {
       const snapshot = await getDocs(collection(db, "donations"));
@@ -24,21 +23,23 @@ const AdminPanel = () => {
   if (user?.role !== "admin") return <Navigate to="/" />;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-4 text-orange-700">
-        👤 Admin Panel
-      </h1>
+    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-white overflow-hidden">
+      <div className="bg-white shadow-2xl rounded-2xl px-6 py-8 w-full max-w-md space-y-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-orange-700 text-center">
+          👤 Admin Panel
+        </h1>
 
-      {/* Export Button */}
-      <button
-        onClick={() => exportDonationsToExcel(donations)}
-        className="mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        📤 Export Donations to Excel
-      </button>
+        <div className="flex justify-center">
+          <button
+            onClick={() => exportDonationsToExcel(donations)}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-full"
+          >
+            📤 Export Donations to Excel
+          </button>
+        </div>
 
-      {/* Create Volunteer */}
-      <CreateVolunteerForm />
+        <CreateVolunteerForm />
+      </div>
     </div>
   );
 };

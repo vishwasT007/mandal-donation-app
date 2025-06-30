@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import DonationForm from "./pages/DonationForm";
 import AdminPanel from "./pages/AdminPanel";
 import LoginPage from "./pages/LoginPage";
+import ReceiptPage from "./pages/ReceiptPage"; // 👈 new import
 import { useAuth } from "./context/AuthContext";
 
 const App = () => {
@@ -16,9 +17,13 @@ const App = () => {
   return (
     <div>
       {user && <Navbar />}
-      <div className="p-6">
+      <div>
         <Routes>
+          {/* Public Route */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/receipt/:id" element={<ReceiptPage />} />{" "}
+          {/* 👈 public */}
+          {/* Protected Routes */}
           <Route
             path="/"
             element={user ? <Dashboard /> : <Navigate to="/login" />}

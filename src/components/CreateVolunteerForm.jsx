@@ -1,9 +1,7 @@
-// src/components/CreateVolunteerForm.jsx
-
 import { useState } from "react";
 import axios from "axios";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "../firebase"; // Your Firestore config
+import { db } from "../firebase";
 
 const CreateVolunteerForm = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -18,7 +16,6 @@ const CreateVolunteerForm = () => {
     setStatus("Creating...");
 
     try {
-      // 1️⃣ Create user via Firebase Auth REST API
       const res = await axios.post(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBqCOlshwEtLLxi5ZZKp2BuG0UK_f3dBfs`,
         {
@@ -30,7 +27,6 @@ const CreateVolunteerForm = () => {
 
       const uid = res.data.localId;
 
-      // 2️⃣ Add user role in Firestore
       await setDoc(doc(db, "users", uid), {
         name: form.name,
         role: "volunteer",
@@ -47,15 +43,18 @@ const CreateVolunteerForm = () => {
   return (
     <form
       onSubmit={handleCreate}
-      className="space-y-4 bg-white p-6 rounded-xl shadow-xl max-w-md mx-auto mt-10"
+      className="bg-gray-50 p-4 sm:p-5 rounded-xl shadow space-y-4 max-w-full"
     >
-      <h2 className="text-xl font-bold text-center">Create Volunteer</h2>
+      <h2 className="text-xl font-semibold text-blue-700 text-center">
+        ➕ Create Volunteer
+      </h2>
+
       <input
         name="name"
-        placeholder="Name"
+        placeholder="Full Name"
         value={form.name}
         onChange={handleChange}
-        className="w-full p-2 border rounded"
+        className="w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
       <input
@@ -64,7 +63,7 @@ const CreateVolunteerForm = () => {
         placeholder="Email"
         value={form.email}
         onChange={handleChange}
-        className="w-full p-2 border rounded"
+        className="w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
       <input
@@ -73,16 +72,30 @@ const CreateVolunteerForm = () => {
         placeholder="Password"
         value={form.password}
         onChange={handleChange}
-        className="w-full p-2 border rounded"
+        className="w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
+
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-lg transition"
       >
-        Create
+        🚀 Create Volunteer
       </button>
-      <p className="text-center">{status}</p>
+
+      {status && (
+        <p
+          className={`text-sm text-center font-medium ${
+            status.includes("✅")
+              ? "text-green-600"
+              : status.includes("❌")
+              ? "text-red-500"
+              : "text-gray-600"
+          }`}
+        >
+          {status}
+        </p>
+      )}
     </form>
   );
 };

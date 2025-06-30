@@ -25,8 +25,10 @@ const Dashboard = () => {
       }
     };
 
-    fetchDonations();
-  }, []);
+    if (user) {
+      fetchDonations();
+    }
+  }, [user]);
 
   const today = new Date();
   const isToday = (ts) => {
@@ -64,79 +66,86 @@ const Dashboard = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-fixed bg-cover bg-center"
-      style={{
-        backgroundImage: "url('/assets/bg-mahabharat.png')",
-      }}
-    >
-      <div className="bg-white bg-opacity-90 backdrop-blur-sm p-6 max-w-6xl mx-auto rounded-xl shadow-md">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-orange-700">📊 Dashboard</h1>
-          <button
-            onClick={exportToExcel}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            📥 Export to Excel
-          </button>
+    <div className="h-screen w-full bg-gradient-to-br from-orange-100 to-white flex items-center justify-center px-2 py-4">
+      <div className="w-full max-w-7xl h-full bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl p-4 sm:p-6 flex flex-col">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-orange-700">
+            📊 Dashboard
+          </h1>
+          {user?.role === "admin" && (
+            <button
+              onClick={exportToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full text-sm sm:text-base"
+            >
+              📥 Export to Excel
+            </button>
+          )}
         </div>
 
-        {loading ? (
-          <p>Loading donations...</p>
-        ) : (
-          <>
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="bg-yellow-100 p-4 rounded-xl shadow text-center">
-                <p className="text-sm text-gray-600">Total Collection</p>
-                <h2 className="text-xl font-bold text-yellow-800">
-                  ₹ {totalAmount}
-                </h2>
-              </div>
-              <div className="bg-green-100 p-4 rounded-xl shadow text-center">
-                <p className="text-sm text-gray-600">Today’s Collection</p>
-                <h2 className="text-xl font-bold text-green-800">
-                  ₹ {todayAmount}
-                </h2>
-              </div>
-              <div className="bg-blue-100 p-4 rounded-xl shadow text-center">
-                <p className="text-sm text-gray-600">Total Donors</p>
-                <h2 className="text-xl font-bold text-blue-800">
-                  {donations.length}
-                </h2>
-              </div>
-              <div className="bg-pink-100 p-4 rounded-xl shadow text-center">
-                <p className="text-sm text-gray-600">Today’s Donors</p>
-                <h2 className="text-xl font-bold text-pink-800">
-                  {todayDonations.length}
-                </h2>
-              </div>
-            </div>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+          <div className="bg-yellow-100 p-4 rounded-xl shadow text-center">
+            <p className="text-xs text-gray-600">Total Collection</p>
+            <h2 className="text-lg font-bold text-yellow-800">
+              ₹ {totalAmount}
+            </h2>
+          </div>
+          <div className="bg-green-100 p-4 rounded-xl shadow text-center">
+            <p className="text-xs text-gray-600">Today’s Collection</p>
+            <h2 className="text-lg font-bold text-green-800">
+              ₹ {todayAmount}
+            </h2>
+          </div>
+          <div className="bg-blue-100 p-4 rounded-xl shadow text-center">
+            <p className="text-xs text-gray-600">Total Donors</p>
+            <h2 className="text-lg font-bold text-blue-800">
+              {donations.length}
+            </h2>
+          </div>
+          <div className="bg-pink-100 p-4 rounded-xl shadow text-center">
+            <p className="text-xs text-gray-600">Today’s Donors</p>
+            <h2 className="text-lg font-bold text-pink-800">
+              {todayDonations.length}
+            </h2>
+          </div>
+        </div>
 
-            {/* Recent Donations Table */}
-            <div className="bg-white shadow rounded-xl overflow-auto">
-              <h2 className="text-lg font-semibold text-orange-700 p-4">
-                🕑 Recent Donations
-              </h2>
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-100 text-left">
-                    <th className="px-4 py-2">Name</th>
-                    <th className="px-4 py-2">Mobile</th>
-                    <th className="px-4 py-2">Amount</th>
-                    <th className="px-4 py-2">Payment</th>
-                    <th className="px-4 py-2">Date</th>
-                    {user?.role === "admin" && (
-                      <th className="px-4 py-2 text-center">Delete</th>
-                    )}
+        {/* Donation Table – Only for Admin */}
+        {user?.role === "admin" && (
+          <div className="flex-1 overflow-auto rounded-xl border bg-white shadow-inner">
+            <table className="min-w-full text-sm">
+              <thead className="sticky top-0 z-10 bg-white">
+                <tr>
+                  <th
+                    colSpan={6}
+                    className="text-lg font-semibold text-orange-700 px-4 py-3 border-b bg-white"
+                  >
+                    🕑 Recent Donations
+                  </th>
+                </tr>
+                <tr className="bg-gray-100 text-left text-gray-700 text-sm">
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Mobile</th>
+                  <th className="px-4 py-2">Amount</th>
+                  <th className="px-4 py-2">Payment</th>
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2 text-center">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4">
+                      Loading donations...
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {donations
+                ) : (
+                  donations
                     .sort((a, b) => b.timestamp?.seconds - a.timestamp?.seconds)
-                    .slice(0, 10)
+                    .slice(0, 30)
                     .map((d) => (
-                      <tr key={d.id} className="border-t">
+                      <tr key={d.id} className="border-t hover:bg-gray-50">
                         <td className="px-4 py-2">{d.fullName}</td>
                         <td className="px-4 py-2">{d.mobile}</td>
                         <td className="px-4 py-2">₹ {d.amount}</td>
@@ -148,22 +157,20 @@ const Dashboard = () => {
                               ).toLocaleDateString()
                             : "N/A"}
                         </td>
-                        {user?.role === "admin" && (
-                          <td className="px-4 py-2 text-center">
-                            <button
-                              onClick={() => handleDelete(d.id)}
-                              className="text-red-600 hover:underline"
-                            >
-                              🗑️ Delete
-                            </button>
-                          </td>
-                        )}
+                        <td className="px-4 py-2 text-center">
+                          <button
+                            onClick={() => handleDelete(d.id)}
+                            className="text-red-600 hover:underline"
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
