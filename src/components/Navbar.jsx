@@ -74,7 +74,7 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden flex flex-col gap-3 px-4 pb-4 bg-white border-t border-orange-200 text-sm text-gray-800">
           <Link
-            to="//dashboard"
+            to="/dashboard"
             className="hover:text-orange-600"
             onClick={toggleMenu}
           >
