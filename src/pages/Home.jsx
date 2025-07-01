@@ -172,11 +172,13 @@ const Home = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className="text-4xl sm:text-5xl font-bold px-4 mb-2">
-            <span className="text-yellow-300 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-              तिरोड़ा चा राजा
-            </span>
-          </h1>
+          <div className="px-2 sm:px-4 mb-1 sm:mb-2 flex justify-center">
+            <img
+              src="/logo.png"
+              alt="Tiroda Cha Raja Logo"
+              className="w-[120px] xs:w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] h-auto max-w-[95%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
+            />
+          </div>
           <div className="text-xl sm:text-2xl font-semibold text-yellow-200 italic">
             "भक्तीचा, समाजाचा, तिरोड़ाचा अभिमान"
           </div>
