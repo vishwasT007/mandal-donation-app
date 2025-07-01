@@ -567,7 +567,7 @@ const Home = () => {
                 className="text-xl font-medium mb-2"
                 style={{ color: currentColors.text }}
               >
-                अध्यक्ष
+                Chairman
               </p>
               <p
                 className="text-sm font-semibold"
@@ -596,7 +596,7 @@ const Home = () => {
                 className="text-xl font-medium mb-2"
                 style={{ color: currentColors.text }}
               >
-                उपाध्यक्ष
+                Vice President
               </p>
               <p
                 className="text-sm font-semibold"
@@ -625,7 +625,7 @@ const Home = () => {
                 className="text-xl font-medium mb-2"
                 style={{ color: currentColors.text }}
               >
-                सचिव
+                Secretary
               </p>
               <p
                 className="text-sm font-semibold"
@@ -656,7 +656,7 @@ const Home = () => {
                   className="text-xl font-medium mb-2"
                   style={{ color: currentColors.text }}
                 >
-                  खजिनदार
+                  Treasurer
                 </p>
                 <p
                   className="text-sm font-semibold"
