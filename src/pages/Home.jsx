@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
+import Gallery from "../components/Gallry";
 
 const Home = () => {
   const [donations, setDonations] = useState([]);
@@ -800,36 +801,7 @@ const Home = () => {
       </motion.section>
 
       {/* Gallery */}
-      <motion.section
-        className="py-8 px-4"
-        style={{ backgroundColor: currentColors.background }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
-      >
-        <div className="max-w-5xl mx-auto text-center">
-          <h2
-            className="text-2xl font-semibold mb-4"
-            style={{ color: currentColors.primary }}
-          >
-            📸 Gallery
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {["/img1.png"].map((img, index) => (
-              <motion.img
-                key={index}
-                src={img}
-                alt={`ganesh${index + 1}`}
-                className="rounded-xl shadow-lg"
-                whileHover={{ scale: 1.03 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + index * 0.1 }}
-              />
-            ))}
-          </div>
-        </div>
-      </motion.section>
+      <Gallery currentColors={currentColors} />
 
       {/* Contact Us */}
       <motion.section
