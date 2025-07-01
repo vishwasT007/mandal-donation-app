@@ -202,8 +202,6 @@ const Home = () => {
         </motion.p>
       </motion.section>
 
-      {/* Rest of the code remains exactly the same */}
-      {/* Stats */}
       {/* Stats */}
       <motion.section
         className="py-6 px-4"
@@ -284,13 +282,13 @@ const Home = () => {
               variants={itemVariants}
             >
               <p
-                className="text-sm"
+                className="text-sm text-center"
                 style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
               >
                 Total Donors
               </p>
               <h2
-                className="text-xl font-bold"
+                className="text-xl font-bold text-center"
                 style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
               >
                 {donorCount}
@@ -363,7 +361,7 @@ const Home = () => {
         </h2>
 
         <motion.div
-          className="text-[1.05rem] sm:text-lg leading-[1.75rem] sm:leading-8 space-y-6 font-[500]"
+          className="text-[1rem] sm:text-lg leading-[1.7rem] sm:leading-8 space-y-6 font-[500] px-4 sm:px-0 text-pretty"
           style={{ color: currentColors.text }}
           variants={containerVariants}
           initial="hidden"
@@ -429,66 +427,42 @@ const Home = () => {
             </h3>
 
             <div className="space-y-4">
-              <motion.div
-                className="flex items-start gap-2"
-                variants={itemVariants}
-              >
-                <span className="mt-1" style={{ color: currentColors.primary }}>
-                  ➡️
-                </span>
-                <p className="font-medium">
-                  Organizing vibrant Ganesh Utsav events with cultural programs,
-                  spiritual gatherings, and stunning decorations.
-                </p>
-              </motion.div>
-              <motion.div
-                className="flex items-start gap-2"
-                variants={itemVariants}
-              >
-                <span className="mt-1" style={{ color: currentColors.primary }}>
-                  🩸
-                </span>
-                <p className="font-medium">
-                  Hosting impactful Blood Donation Camps that support public
-                  health.
-                </p>
-              </motion.div>
-              <motion.div
-                className="flex items-start gap-2"
-                variants={itemVariants}
-              >
-                <span className="mt-1" style={{ color: currentColors.primary }}>
-                  🤝
-                </span>
-                <p className="font-medium">
-                  Helping underprivileged families through community-led
-                  initiatives.
-                </p>
-              </motion.div>
-              <motion.div
-                className="flex items-start gap-2"
-                variants={itemVariants}
-              >
-                <span className="mt-1" style={{ color: currentColors.primary }}>
-                  🌱
-                </span>
-                <p className="font-medium">
-                  Leading tree plantation drives and environmental awareness
-                  campaigns.
-                </p>
-              </motion.div>
-              <motion.div
-                className="flex items-start gap-2"
-                variants={itemVariants}
-              >
-                <span className="mt-1" style={{ color: currentColors.primary }}>
-                  🎤
-                </span>
-                <p className="font-medium">
-                  Encouraging youth participation and providing a platform for
-                  talent.
-                </p>
-              </motion.div>
+              {[
+                {
+                  icon: "➡️",
+                  text: "Organizing vibrant Ganesh Utsav events with cultural programs, spiritual gatherings, and stunning decorations.",
+                },
+                {
+                  icon: "🩸",
+                  text: "Hosting impactful Blood Donation Camps that support public health.",
+                },
+                {
+                  icon: "🤝",
+                  text: "Helping underprivileged families through community-led initiatives.",
+                },
+                {
+                  icon: "🌱",
+                  text: "Leading tree plantation drives and environmental awareness campaigns.",
+                },
+                {
+                  icon: "🎤",
+                  text: "Encouraging youth participation and providing a platform for talent.",
+                },
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="flex items-start gap-2"
+                  variants={itemVariants}
+                >
+                  <span
+                    className="mt-1"
+                    style={{ color: currentColors.primary }}
+                  >
+                    {item.icon}
+                  </span>
+                  <p className="font-medium">{item.text}</p>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
