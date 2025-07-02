@@ -4,12 +4,12 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBqCOlshwEtLLxi5ZZKp2BuG0UK_f3dBfs",
-  authDomain: "mandal-app-87305.firebaseapp.com",
-  projectId: "mandal-app-87305",
-  storageBucket: "mandal-app-87305.firebasestorage.app",
-  messagingSenderId: "429069952935",
-  appId: "1:429069952935:web:531a52876ea4fcea72b882",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
