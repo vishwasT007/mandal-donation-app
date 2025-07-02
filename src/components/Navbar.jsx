@@ -43,6 +43,9 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
+          <Link to="/" className="hover:text-orange-600 text-lg" title="Home">
+            🏠
+          </Link>
           <Link to="/dashboard" className="hover:text-orange-600">
             Dashboard
           </Link>
@@ -73,6 +76,14 @@ const Navbar = () => {
       {/* Mobile Nav */}
       {isMenuOpen && (
         <div className="md:hidden flex flex-col gap-3 px-4 pb-4 bg-white border-t border-orange-200 text-sm text-gray-800">
+          <Link
+            to="/"
+            className="hover:text-orange-600 text-lg"
+            onClick={toggleMenu}
+            title="Home"
+          >
+            🏠
+          </Link>
           <Link
             to="/dashboard"
             className="hover:text-orange-600"
