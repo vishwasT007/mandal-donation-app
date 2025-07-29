@@ -84,7 +84,7 @@ const Gallery = ({ currentColors }) => {
 
   if (loading) {
     return (
-      <section
+      <motion.section
         className="py-16 px-4"
         style={{ backgroundColor: safeColors.background }}
         initial={{ opacity: 0 }}
@@ -95,12 +95,12 @@ const Gallery = ({ currentColors }) => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading gallery...</p>
         </div>
-      </section>
+      </motion.section>
     );
   }
 
   return (
-    <section
+    <motion.section
       className="py-16 px-4"
       style={{ backgroundColor: safeColors.background }}
       initial={{ opacity: 0 }}
@@ -109,7 +109,7 @@ const Gallery = ({ currentColors }) => {
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
@@ -124,10 +124,10 @@ const Gallery = ({ currentColors }) => {
             Relive the magical moments of Ganesh Chaturthi celebrations and our
             charitable activities
           </p>
-        </div>
+        </motion.div>
 
         {/* Category Tabs */}
-        <div
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-center mb-8"
@@ -147,7 +147,7 @@ const Gallery = ({ currentColors }) => {
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -280,7 +280,7 @@ const Gallery = ({ currentColors }) => {
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 };
 
