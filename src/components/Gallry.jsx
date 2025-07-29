@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase";
@@ -152,7 +152,7 @@ const Gallery = ({ currentColors }) => {
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {allImages.map((image, index) => (
-            <div
+            <motion.div
               key={image.id}
               className="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer bg-white"
               initial={{ opacity: 0, y: 30 }}
@@ -188,13 +188,13 @@ const Gallery = ({ currentColors }) => {
               <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
                 {image.year || "N/A"}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Empty State */}
         {allImages.length === 0 && (
-          <div
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-12"
@@ -202,14 +202,14 @@ const Gallery = ({ currentColors }) => {
             <p className="text-gray-500 text-lg">
               No {activeCategory.toLowerCase()} images available yet.
             </p>
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Lightbox Modal */}
       <AnimatePresence>
         {selectedImage && (
-          <div
+          <motion.div
             className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={closeModal}
             initial={{ opacity: 0 }}
@@ -248,7 +248,7 @@ const Gallery = ({ currentColors }) => {
 
             {/* Modal Image */}
             <div className="relative w-full h-full flex items-center justify-center p-8">
-              <img
+              <motion.img
                 key={currentImageIndex}
                 src={selectedImage.imageUrl}
                 alt={selectedImage.title || "Image"}
@@ -277,7 +277,7 @@ const Gallery = ({ currentColors }) => {
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
               Use arrow keys to navigate • ESC to close
             </div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>
