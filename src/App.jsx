@@ -27,35 +27,47 @@ const App = () => {
     location.pathname === "/" || location.pathname === "/login";
 
   return (
-    <div className="min-h-screen bg-orange-50">
+    <div className="min-h-screen bg-orange-50 flex flex-col">
       {/* Show navbar only if user is logged in and not on login/home page */}
       {!hideNavbar && user && <Navbar />}
 
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/receipt/:id" element={<ReceiptPage />} />
+      <div className="flex-1">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/receipt/:id" element={<ReceiptPage />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={user ? <Dashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/donate"
-          element={user ? <DonationForm /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/admin"
-          element={
-            user?.role === "admin" ? <AdminPanel /> : <Navigate to="/" />
-          }
-        />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={user ? <Dashboard /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/donate"
+            element={user ? <DonationForm /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/admin"
+            element={
+              user?.role === "admin" ? <AdminPanel /> : <Navigate to="/" />
+            }
+          />
 
-        {/* Catch-all route to redirect unknown paths */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          {/* Catch-all route to redirect unknown paths */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+
+      {/* Global Footer */}
+      <footer className="bg-white border-t border-gray-200 py-4 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-xs text-gray-500">
+            Developed by{" "}
+            <span className="font-medium text-gray-700">Vishwas Tarende</span>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

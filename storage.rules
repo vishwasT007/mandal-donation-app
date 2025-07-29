@@ -1,0 +1,19 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow public read access to all files with CORS headers
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow authenticated users to write to gallery folder
+    match /gallery/{allPaths=**} {
+      allow write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to write to receipts folder
+    match /receipts/{allPaths=**} {
+      allow write: if request.auth != null;
+    }
+  }
+} 

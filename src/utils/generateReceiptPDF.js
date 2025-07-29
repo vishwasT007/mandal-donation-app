@@ -232,6 +232,8 @@ import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
 export const generateReceiptPDF = async (donationData) => {
+  console.log("Starting receipt generation with data:", donationData);
+
   const {
     fullName,
     mobile,
@@ -240,7 +242,20 @@ export const generateReceiptPDF = async (donationData) => {
     paymentMode,
     utrNumber,
     timestamp,
+    due,
+    clearedMode,
+    clearedAt,
   } = donationData;
+
+  console.log("Extracted data:", {
+    fullName,
+    mobile,
+    amount,
+    paymentMode,
+    due,
+    clearedMode,
+    clearedAt,
+  });
 
   const date = timestamp?.seconds
     ? new Date(timestamp.seconds * 1000).toLocaleDateString("en-IN", {
@@ -249,6 +264,8 @@ export const generateReceiptPDF = async (donationData) => {
         year: "numeric",
       })
     : "N/A";
+
+  console.log("Generated date:", date);
 
   const receipt = document.createElement("div");
   receipt.style.width = "700px";
@@ -281,7 +298,6 @@ export const generateReceiptPDF = async (donationData) => {
       <h2 style="color:#c2410c; font-size: 20px; margin-bottom: 10px;">Donation Receipt</h2>
       <div style="border-bottom:2px solid #1e4a1e; width:150px; margin:0 auto;"></div>
     </div>
-    
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
       <div>
         <p style="margin:5px 0;"><strong>Receipt No:</strong> GCM-${new Date().getFullYear()}-${uuidv4()
@@ -290,14 +306,12 @@ export const generateReceiptPDF = async (donationData) => {
         <p style="margin:5px 0;"><strong>Date:</strong> ${date}</p>
       </div>
     </div>
-    
     <div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-bottom:20px;">
       <h3 style="color:#1e4a1e; margin-top:0; margin-bottom:10px;">Donor Information</h3>
       <p style="margin:8px 0;"><strong>Name:</strong> ${fullName}</p>
       <p style="margin:8px 0;"><strong>Mobile:</strong> ${mobile}</p>
       <p style="margin:8px 0;"><strong>Address:</strong> ${address}</p>
     </div>
-    
     <div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-bottom:20px;">
       <h3 style="color:#1e4a1e; margin-top:0; margin-bottom:10px;">Donation Details</h3>
       <p style="margin:8px 0;"><strong>Amount:</strong> ₹${Number(
@@ -306,9 +320,33 @@ export const generateReceiptPDF = async (donationData) => {
       <p style="margin:8px 0;"><strong>Amount in Words:</strong> ${numberToWords(
         amount
       )} Rupees Only</p>
-      <p style="margin:8px 0;"><strong>Payment Mode:</strong> ${paymentMode}</p>
+      <p style="margin:8px 0;"><strong>Payment Mode:</strong> 
+        ${
+          due
+            ? `Credit <span style='color:#eab308;'>(Due)</span>`
+            : clearedMode
+            ? `${clearedMode} <span style='color:#16a34a;'>(Cleared)</span>`
+            : paymentMode
+        }
+      </p>
       ${
-        paymentMode === "UPI"
+        !due && clearedAt
+          ? `<p style='margin:8px 0;'><strong>Cleared On:</strong> ${
+              typeof clearedAt === "object" && clearedAt.seconds
+                ? new Date(clearedAt.seconds * 1000).toLocaleDateString(
+                    "en-IN",
+                    { day: "numeric", month: "long", year: "numeric" }
+                  )
+                : new Date(clearedAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
+            }</p>`
+          : ""
+      }
+      ${
+        paymentMode === "UPI" && utrNumber && !due
           ? `<p style="margin:8px 0;"><strong>Transaction ID:</strong> ${utrNumber}</p>`
           : ""
       }
@@ -333,8 +371,12 @@ export const generateReceiptPDF = async (donationData) => {
   receipt.appendChild(contentDiv);
   document.body.appendChild(receipt);
 
+  console.log("Receipt DOM created, generating canvas...");
+
   // Optimization: use JPEG instead of PNG & reduce quality
   const canvas = await html2canvas(receipt, { scale: 2 });
+  console.log("Canvas generated, converting to PDF...");
+
   const imgData = canvas.toDataURL("image/jpeg", 0.6); // lower quality but still good visual
   const pdf = new jsPDF({
     orientation: "portrait",
@@ -347,12 +389,16 @@ export const generateReceiptPDF = async (donationData) => {
   const pdfBlob = pdf.output("blob");
   document.body.removeChild(receipt);
 
+  console.log("PDF generated, uploading to Firebase Storage...");
+
   // Upload to Firebase Storage
   const storage = getStorage();
   const fileName = `receipts/ganesh-chaturthi/${uuidv4()}-${fullName}.pdf`;
   const storageRef = ref(storage, fileName);
   await uploadBytes(storageRef, pdfBlob);
   const longURL = await getDownloadURL(storageRef);
+
+  console.log("File uploaded to Storage, creating short link...");
 
   // Create short link in Firestore
   const firestore = getFirestore();
@@ -366,7 +412,9 @@ export const generateReceiptPDF = async (donationData) => {
     createdAt: new Date().toISOString(),
   });
 
-  return `https://tiroracharaja.in/receipt?id=${shortId}`;
+  const receiptUrl = `https://tiroracharaja.in/receipt?id=${shortId}`;
+  console.log("Receipt generation completed:", receiptUrl);
+  return receiptUrl;
 };
 
 // Helper function remains unchanged
