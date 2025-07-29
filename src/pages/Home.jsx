@@ -596,7 +596,7 @@ const Home = () => {
                 className="text-2xl font-extrabold mb-1"
                 style={{ color: currentColors.primary }}
               >
-                Mihir Ochani
+                Karan Parashar
               </h3>
               <p
                 className="text-xl font-medium mb-2"
@@ -608,7 +608,7 @@ const Home = () => {
                 className="text-sm font-semibold"
                 style={{ color: currentColors.muted }}
               >
-                +91 91560 45562
+                +91 9595333733
               </p>
             </motion.div>
 
@@ -627,7 +627,7 @@ const Home = () => {
                   className="text-2xl font-extrabold mb-1"
                   style={{ color: currentColors.primary }}
                 >
-                  Karan Parashar
+                  Tushar Sharma
                 </h3>
                 <p
                   className="text-xl font-medium mb-2"
@@ -639,7 +639,7 @@ const Home = () => {
                   className="text-sm font-semibold"
                   style={{ color: currentColors.muted }}
                 >
-                  +91 95953 33733
+                  +91 9834873945
                 </p>
               </motion.div>
 
@@ -700,6 +700,7 @@ const Home = () => {
                   "Bhagwandas Ji Dipani",
                   "Manoj Ji Jiwtani",
                   "Suresh Ji Parashar",
+                  "Pankaj Ji Dehliwal",
                   "Chetan Ji Parashar",
                   "Sanjay Ji Kothe",
                   "Bhushan Ji Zararia",
@@ -746,7 +747,6 @@ const Home = () => {
                   "Aniket Kesharwani",
                   "Rohit Tarare",
                   "Niraj Tarare",
-                  "Tushar Sharma",
                   "Darshan Zararia",
                   "Nitin Ochani",
                   "Nikhil Kumbhare",
