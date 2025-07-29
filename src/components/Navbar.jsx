@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
   X,
@@ -51,7 +51,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
-          <div
+          <motion.div
             className="flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -70,7 +70,7 @@ const Navbar = () => {
               </h1>
               <p className="text-xs text-gray-500">Tirora Cha Raja</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
@@ -96,7 +96,7 @@ const Navbar = () => {
           {/* User Menu */}
           <div className="hidden md:flex items-center gap-3">
             {user && (
-              <div
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex items-center gap-3"
@@ -126,7 +126,7 @@ const Navbar = () => {
                   <LogOut className="h-4 w-4" />
                   Logout
                 </button>
-              </div>
+              </motion.div>
             )}
           </div>
 

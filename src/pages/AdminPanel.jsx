@@ -14,7 +14,7 @@ import {
 import { db } from "../firebase";
 import { exportDonationsToExcel } from "../utils/exportDonationsToExcel";
 import CreateVolunteerForm from "../components/CreateVolunteerForm";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Settings,
   Download,
