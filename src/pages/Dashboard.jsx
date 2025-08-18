@@ -42,16 +42,34 @@ const Dashboard = () => {
     return [...new Set(years)].sort((a, b) => b - a);
   };
 
-  // Filter donations by selected year
+  // Filter donations by selected year and sort by latest first
   const getFilteredDonations = () => {
-    if (selectedYear === "all") return donations;
-    return donations.filter((d) => {
-      if (d.timestamp?.seconds) {
-        return (
-          new Date(d.timestamp.seconds * 1000).getFullYear() === selectedYear
-        );
+    let filtered = donations;
+    
+    if (selectedYear !== "all") {
+      filtered = donations.filter((d) => {
+        if (d.timestamp?.seconds) {
+          return (
+            new Date(d.timestamp.seconds * 1000).getFullYear() === selectedYear
+          );
+        }
+        return false;
+      });
+    }
+    
+    // Sort by timestamp (latest first) and then by creation time
+    return filtered.sort((a, b) => {
+      // First sort by timestamp if available
+      if (a.timestamp?.seconds && b.timestamp?.seconds) {
+        return b.timestamp.seconds - a.timestamp.seconds;
       }
-      return false;
+      
+      // If no timestamp, sort by document ID (newer documents have higher IDs)
+      if (a.id && b.id) {
+        return b.id.localeCompare(a.id);
+      }
+      
+      return 0;
     });
   };
 
@@ -330,6 +348,13 @@ const Dashboard = () => {
               >
                 Recent Donations
               </h2>
+              <p
+                className={`text-sm transition-colors ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                Latest donations appear first
+              </p>
 
               {/* Filter and Export Controls */}
               <div className="flex flex-col sm:flex-row gap-3">
@@ -539,11 +564,30 @@ const Dashboard = () => {
                             darkMode ? "text-gray-300" : "text-gray-500"
                           }`}
                         >
-                          {donation.timestamp?.seconds
-                            ? new Date(
-                                donation.timestamp.seconds * 1000
-                              ).toLocaleDateString()
-                            : "N/A"}
+                          {donation.timestamp?.seconds ? (
+                            <div>
+                              <div className="font-medium">
+                                {new Date(
+                                  donation.timestamp.seconds * 1000
+                                ).toLocaleDateString('en-IN', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric'
+                                })}
+                              </div>
+                              <div className="text-xs opacity-75">
+                                {new Date(
+                                  donation.timestamp.seconds * 1000
+                                ).toLocaleTimeString('en-IN', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                                })}
+                              </div>
+                            </div>
+                          ) : (
+                            "N/A"
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
