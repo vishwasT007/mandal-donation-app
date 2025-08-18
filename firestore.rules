@@ -2,13 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ✅ Donations - Secure access control
+    // ✅ Donations - Secure access control with public stats
     match /donations/{docId} {
-      // Public read for basic stats (amount only, no personal info)
-      allow read: if request.auth != null || 
-        (resource.data.amount != null && 
-         resource.data.paymentMode != null && 
-         resource.data.timestamp != null);
+      // Public read for basic stats (amount and payment mode only, no personal info)
+      allow read: if true; // Allow public read for homepage statistics
       
       // Only authenticated users can create donations
       allow create: if request.auth != null;

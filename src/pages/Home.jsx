@@ -10,25 +10,60 @@ const Home = () => {
   const [donations, setDonations] = useState([]);
   const [targetAmount, setTargetAmount] = useState(50000);
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDonations = async () => {
-      const snapshot = await getDocs(collection(db, "donations"));
-      const data = snapshot.docs.map((doc) => doc.data());
-      setDonations(data);
-    };
-
-    const fetchTargetAmount = async () => {
-      const docRef = doc(db, "settings", "donationGoal");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setTargetAmount(docSnap.data().targetAmount || 50000);
+    const fetchDonations = async (retryCount = 0) => {
+      try {
+        const snapshot = await getDocs(collection(db, "donations"));
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setDonations(data);
+      } catch {
+        // Retry up to 3 times with exponential backoff
+        if (retryCount < 3) {
+          setTimeout(() => {
+            fetchDonations(retryCount + 1);
+          }, Math.pow(2, retryCount) * 1000);
+        } else {
+          setDonations([]);
+        }
       }
     };
 
-    fetchDonations();
-    fetchTargetAmount();
+    const fetchTargetAmount = async (retryCount = 0) => {
+      try {
+        const docRef = doc(db, "settings", "donationGoal");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const target = docSnap.data().targetAmount || 50000;
+          setTargetAmount(target);
+        }
+      } catch {
+        // Retry up to 3 times with exponential backoff
+        if (retryCount < 3) {
+          setTimeout(() => {
+            fetchTargetAmount(retryCount + 1);
+          }, Math.pow(2, retryCount) * 1000);
+        } else {
+          setTargetAmount(50000);
+        }
+      }
+    };
+
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([fetchDonations(), fetchTargetAmount()]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
 
     // Check user's preferred color scheme
     if (
@@ -46,32 +81,36 @@ const Home = () => {
 
   const donorCount = donations.length;
 
-  // Color schemes for light/dark mode
+  // Enhanced color schemes for light/dark mode
   const colors = {
     light: {
-      primary: "#c2410c",
-      secondary: "#ea580c",
-      background: "#fffbeb",
+      primary: "#ea580c",
+      secondary: "#fb923c",
+      accent: "#f97316",
+      background: "#fefce8",
+      surface: "#ffffff",
       card: "#ffffff",
       text: "#1e293b",
       muted: "#64748b",
       progress: "#22c55e",
       stats: {
-        total: "#fef08a",
-        target: "#bbf7d0",
-        donors: "#bfdbfe",
+        total: "#fef3c7",
+        target: "#dcfce7",
+        donors: "#dbeafe",
       },
     },
     dark: {
       primary: "#f97316",
       secondary: "#fb923c",
-      background: "#1e293b",
+      accent: "#fdba74",
+      background: "#0f172a",
+      surface: "#1e293b",
       card: "#334155",
       text: "#f8fafc",
       muted: "#94a3b8",
       progress: "#4ade80",
       stats: {
-        total: "#713f12",
+        total: "#451a03",
         target: "#14532d",
         donors: "#1e3a8a",
       },
@@ -80,25 +119,64 @@ const Home = () => {
 
   const currentColors = darkMode ? colors.dark : colors.light;
 
-  // Animation variants
+  // Enhanced animation variants with spring physics
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 0.8,
+      },
+    },
+  };
+
+  const heroVariants = {
+    hidden: { opacity: 0, y: -50 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 20,
+        duration: 1.2,
+      },
+    },
+  };
+
+  const statsVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    show: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 12,
+        duration: 0.6,
+      },
+    },
   };
 
   return (
     <div
-      className={`min-h-screen w-full transition-colors duration-300 ${
+      className={`min-h-screen w-full transition-all duration-700 ease-out ${
         darkMode ? "dark" : ""
       }`}
       style={{
@@ -110,389 +188,530 @@ const Home = () => {
         position: "relative",
       }}
     >
-      {/* Dark mode toggle */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
+      {/* Enhanced Dark mode toggle with smooth transitions */}
+      <motion.div
+        className="fixed top-6 right-6 z-50"
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+      >
+        <motion.button
           onClick={() => setDarkMode(!darkMode)}
-          className={`p-2 rounded-full shadow-lg ${
+          className={`p-3 rounded-full shadow-2xl backdrop-blur-sm transition-all duration-500 ${
             darkMode
-              ? "bg-yellow-200 text-gray-900"
-              : "bg-gray-800 text-yellow-200"
+              ? "bg-yellow-200 text-gray-900 hover:bg-yellow-300"
+              : "bg-gray-800 text-yellow-200 hover:bg-gray-700"
           }`}
+          whileHover={{ scale: 1.1, rotate: 180 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 300 }}
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
         >
           {darkMode ? "☀️" : "🌙"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      {/* Banner */}
+      {/* Enhanced Hero Banner with parallax effect */}
       <motion.section
-        className="relative py-12 text-center"
-        style={{ backgroundColor: currentColors.primary, color: "white" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        className="relative py-20 text-center overflow-hidden"
+        style={{
+          backgroundColor: currentColors.primary,
+          backgroundImage: `linear-gradient(135deg, ${currentColors.primary} 0%, ${currentColors.secondary} 100%)`,
+        }}
+        initial="hidden"
+        animate="show"
+        variants={heroVariants}
       >
-        {/* Top Right Buttons - Optimized for all devices */}
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-          {/* Login Button - appears first on mobile */}
+        {/* Animated background elements */}
+        <motion.div
+          className="absolute inset-0 opacity-10"
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        >
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
+          <div className="absolute top-32 right-20 w-24 h-24 bg-white rounded-full"></div>
+          <div className="absolute bottom-20 left-32 w-20 h-20 bg-white rounded-full"></div>
+        </motion.div>
+
+        {/* Top Right Buttons - Enhanced with better positioning */}
+        <div className="fixed top-6 right-20 z-50 flex items-center gap-3">
           <motion.button
             onClick={() => navigate("/login")}
-            className={`font-semibold px-3 py-1 rounded-full text-sm sm:text-base ${
+            className={`font-bold px-6 py-3 rounded-full text-sm sm:text-base shadow-lg backdrop-blur-sm transition-all duration-500 ${
               darkMode
-                ? "bg-yellow-200 text-gray-900 hover:bg-yellow-300"
-                : "bg-white text-orange-700 hover:bg-orange-100"
+                ? "bg-yellow-200 text-gray-900 hover:bg-yellow-300 hover:shadow-xl"
+                : "bg-white text-orange-700 hover:bg-orange-100 hover:shadow-xl"
             }`}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
             <span className="hidden sm:inline">🔐 Login</span>
             <span className="sm:hidden">🔐</span>
           </motion.button>
-
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`p-2 rounded-full shadow-lg ${
-              darkMode
-                ? "bg-yellow-200 text-gray-900"
-                : "bg-gray-800 text-yellow-200"
-            }`}
-            aria-label={
-              darkMode ? "Switch to light mode" : "Switch to dark mode"
-            }
-          >
-            {darkMode ? "☀️" : "🌙"}
-          </button>
         </div>
 
-        {/* Added Tirora Cha Raja in Hindi with creative styling */}
+        {/* Enhanced Logo and Title */}
         <motion.div
-          className="mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          className="mb-8"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 150 }}
         >
-          <div className="px-2 sm:px-4 mb-1 sm:mb-2 flex justify-center">
-            <img
+          <div className="px-2 sm:px-4 mb-4 flex justify-center">
+            <motion.img
               src="/logo.png"
               alt="Tiroda Cha Raja Logo"
-              className="w-[120px] xs:w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] h-auto max-w-[95%] drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
+              className="w-[140px] xs:w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] h-auto max-w-[95%] drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 200 }}
             />
           </div>
-          <div className="text-xl sm:text-2xl font-semibold text-yellow-200 italic">
+          <motion.div
+            className="text-2xl sm:text-3xl font-bold text-yellow-200 italic mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+          >
             "भक्तीचा, समाजाचा, तिरोड़ाचा अभिमान"
-          </div>
+          </motion.div>
         </motion.div>
 
         <motion.h1
-          className="text-3xl sm:text-4xl font-bold px-4"
-          initial={{ y: -50 }}
-          animate={{ y: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
+          className="text-4xl sm:text-5xl lg:text-6xl font-bold px-4 mb-4 text-white drop-shadow-lg"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{
+            delay: 0.4,
+            type: "spring",
+            stiffness: 80,
+            damping: 20,
+          }}
         >
           श्रीराम गंज बाजार सार्वजनिक गणेश उत्सव मंडळ, तिरोड़ा
         </motion.h1>
         <motion.p
-          className="mt-2 text-lg px-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          className="mt-4 text-xl sm:text-2xl px-4 text-yellow-100 font-medium"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, type: "spring", stiffness: 100 }}
         >
           Established in 2017 • Serving Culture, Devotion & Community
         </motion.p>
       </motion.section>
 
-      {/* Stats */}
+      {/* Enhanced Stats Section with better animations */}
       <motion.section
-        className="py-6 px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
+        className="py-16 px-4 -mt-8 relative z-10"
+        initial="hidden"
+        animate="show"
+        variants={containerVariants}
       >
-        <div className="max-w-4xl mx-auto">
-          {/* First row - always shows first two stats */}
-          <div className="grid grid-cols-2 gap-4 text-center mb-4 sm:mb-0 sm:grid-cols-3">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <motion.div
-              className="p-4 rounded-xl shadow-lg"
-              style={{ backgroundColor: currentColors.stats.total }}
-              whileHover={{ scale: 1.03 }}
-              variants={itemVariants}
+              className="p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/20"
+              style={{
+                backgroundColor: currentColors.stats.total,
+                backgroundImage: `linear-gradient(135deg, ${currentColors.stats.total} 0%, ${currentColors.stats.total}dd 100%)`,
+              }}
+              variants={statsVariants}
+              whileHover={{
+                scale: 1.05,
+                y: -8,
+                transition: { type: "spring", stiffness: 300 },
+              }}
             >
-              <p
-                className="text-sm"
-                style={{ color: darkMode ? "#fef08a" : "#713f12" }}
-              >
-                Total Donations
-              </p>
-              <h2
-                className="text-xl font-bold"
-                style={{ color: darkMode ? "#fef08a" : "#713f12" }}
-              >
-                ₹{totalAmount.toLocaleString()}
-              </h2>
-            </motion.div>
-            <motion.div
-              className="p-4 rounded-xl shadow-lg"
-              style={{ backgroundColor: currentColors.stats.target }}
-              whileHover={{ scale: 1.03 }}
-              variants={itemVariants}
-            >
-              <p
-                className="text-sm"
-                style={{ color: darkMode ? "#bbf7d0" : "#14532d" }}
-              >
-                Expected Budget
-              </p>
-              <h2
-                className="text-xl font-bold"
-                style={{ color: darkMode ? "#bbf7d0" : "#14532d" }}
-              >
-                ₹{targetAmount.toLocaleString()}
-              </h2>
+              <div className="text-center">
+                <div className="text-4xl mb-3">💰</div>
+                <p
+                  className="text-lg font-semibold mb-2"
+                  style={{ color: darkMode ? "#fef08a" : "#713f12" }}
+                >
+                  Total Donations
+                </p>
+                <h2
+                  className="text-3xl font-bold"
+                  style={{ color: darkMode ? "#fef08a" : "#713f12" }}
+                >
+                  {isLoading ? (
+                    <motion.div
+                      className="inline-block w-8 h-8 border-4 border-current border-t-transparent rounded-full animate-spin"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ) : (
+                    `₹${totalAmount.toLocaleString()}`
+                  )}
+                </h2>
+              </div>
             </motion.div>
 
-            {/* Third stat - hidden on mobile in this row */}
             <motion.div
-              className="hidden sm:block p-4 rounded-xl shadow-lg"
-              style={{ backgroundColor: currentColors.stats.donors }}
-              whileHover={{ scale: 1.03 }}
-              variants={itemVariants}
+              className="p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/20"
+              style={{
+                backgroundColor: currentColors.stats.target,
+                backgroundImage: `linear-gradient(135deg, ${currentColors.stats.target} 0%, ${currentColors.stats.target}dd 100%)`,
+              }}
+              variants={statsVariants}
+              whileHover={{
+                scale: 1.05,
+                y: -8,
+                transition: { type: "spring", stiffness: 300 },
+              }}
             >
-              <p
-                className="text-sm"
-                style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
-              >
-                Total Donors
-              </p>
-              <h2
-                className="text-xl font-bold"
-                style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
-              >
-                {donorCount}
-              </h2>
+              <div className="text-center">
+                <div className="text-4xl mb-3">🎯</div>
+                <p
+                  className="text-lg font-semibold mb-2"
+                  style={{ color: darkMode ? "#bbf7d0" : "#14532d" }}
+                >
+                  Expected Budget
+                </p>
+                <h2
+                  className="text-3xl font-bold"
+                  style={{ color: darkMode ? "#bbf7d0" : "#14532d" }}
+                >
+                  {isLoading ? (
+                    <motion.div
+                      className="inline-block w-8 h-8 border-4 border-current border-t-transparent rounded-full animate-spin"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ) : (
+                    `₹${targetAmount.toLocaleString()}`
+                  )}
+                </h2>
+              </div>
             </motion.div>
-          </div>
 
-          {/* Second row - only shows on mobile */}
-          <div className="sm:hidden flex justify-center">
             <motion.div
-              className="p-4 rounded-xl shadow-lg w-full max-w-[200px]"
-              style={{ backgroundColor: currentColors.stats.donors }}
-              whileHover={{ scale: 1.03 }}
-              variants={itemVariants}
+              className="p-8 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/20 sm:col-span-2 lg:col-span-1"
+              style={{
+                backgroundColor: currentColors.stats.donors,
+                backgroundImage: `linear-gradient(135deg, ${currentColors.stats.donors} 0%, ${currentColors.stats.donors}dd 100%)`,
+              }}
+              variants={statsVariants}
+              whileHover={{
+                scale: 1.05,
+                y: -8,
+                transition: { type: "spring", stiffness: 300 },
+              }}
             >
-              <p
-                className="text-sm text-center"
-                style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
-              >
-                Total Donors
-              </p>
-              <h2
-                className="text-xl font-bold text-center"
-                style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
-              >
-                {donorCount}
-              </h2>
+              <div className="text-center">
+                <div className="text-4xl mb-3">👥</div>
+                <p
+                  className="text-lg font-semibold mb-2"
+                  style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
+                >
+                  Total Donors
+                </p>
+                <h2
+                  className="text-3xl font-bold"
+                  style={{ color: darkMode ? "#bfdbfe" : "#1e3a8a" }}
+                >
+                  {isLoading ? (
+                    <motion.div
+                      className="inline-block w-8 h-8 border-4 border-current border-t-transparent rounded-full animate-spin"
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
+                    />
+                  ) : (
+                    donorCount
+                  )}
+                </h2>
+              </div>
             </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* Progress Bar */}
+      {/* Enhanced Progress Bar with smooth animations */}
       <motion.section
-        className="py-6 px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        className="py-16 px-4"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, type: "spring", stiffness: 100 }}
       >
-        <div className="max-w-3xl mx-auto text-center">
-          <h2
-            className="text-2xl font-semibold mb-2"
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold mb-4"
             style={{ color: currentColors.primary }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1, type: "spring", stiffness: 150 }}
           >
-            Our Target
-          </h2>
-          <p className="mb-4" style={{ color: currentColors.text }}>
+            🎯 Our Target
+          </motion.h2>
+          <motion.p
+            className="mb-8 text-lg sm:text-xl"
+            style={{ color: currentColors.text }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, type: "spring", stiffness: 100 }}
+          >
             We aim to raise ₹{targetAmount.toLocaleString()} to successfully
             organize the Ganesh Utsav this year. Every rupee matters! 🙏
-          </p>
-          <div
-            className="w-full rounded-full h-6 mb-2 overflow-hidden shadow-inner relative"
-            style={{ backgroundColor: darkMode ? "#334155" : "#e2e8f0" }}
+          </motion.p>
+
+          <motion.div
+            className="w-full rounded-2xl h-8 mb-4 overflow-hidden shadow-2xl relative bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 1.2, duration: 1.5, ease: "easeOut" }}
           >
             <motion.div
-              className="h-full rounded-full"
+              className="h-full rounded-2xl relative overflow-hidden"
               style={{ backgroundColor: currentColors.progress }}
               initial={{ width: 0 }}
               animate={{
                 width: `${Math.min((totalAmount / targetAmount) * 100, 100)}%`,
-                transition: { duration: 1, delay: 0.6 },
+                transition: { duration: 2, delay: 1.5, ease: "easeOut" },
               }}
-            ></motion.div>
-            <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-white drop-shadow">
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                animate={{
+                  x: ["-100%", "100%"],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: 3,
+                }}
+              />
+            </motion.div>
+            <motion.span
+              className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white drop-shadow-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 3, duration: 0.5 }}
+            >
               ₹{totalAmount.toLocaleString()}
-            </span>
-          </div>
-          <p className="text-sm" style={{ color: currentColors.muted }}>
+            </motion.span>
+          </motion.div>
+
+          <motion.p
+            className="text-base font-medium"
+            style={{ color: currentColors.muted }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3.5, duration: 0.5 }}
+          >
             ₹{totalAmount.toLocaleString()} raised out of ₹
             {targetAmount.toLocaleString()}
-          </p>
+          </motion.p>
         </div>
       </motion.section>
 
-      {/* About */}
+      {/* Enhanced About Section with better visual hierarchy */}
       <motion.section
-        className="px-4 sm:px-8 py-10 max-w-4xl mx-auto rounded-xl shadow-2xl my-8"
-        style={{
-          backgroundColor: currentColors.card,
-          backgroundImage: darkMode
-            ? "linear-gradient(to bottom right, #1e293b, #334155, #475569)"
-            : "linear-gradient(to bottom right, #fffbeb, #ffffff, #ffedd5)",
-        }}
-        initial={{ opacity: 0, y: 20 }}
+        className="px-4 sm:px-8 py-20 max-w-6xl mx-auto"
+        initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 1.3, type: "spring", stiffness: 80 }}
       >
-        <h2
-          className="text-2xl sm:text-4xl font-bold mb-6 text-center"
-          style={{ color: currentColors.primary }}
-        >
-          About Our Mandal
-        </h2>
-
         <motion.div
-          className="text-[1rem] sm:text-lg leading-[1.7rem] sm:leading-8 space-y-6 font-[500] px-4 sm:px-0 text-pretty"
-          style={{ color: currentColors.text }}
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
+          className="rounded-3xl shadow-2xl border border-white/20 overflow-hidden backdrop-blur-sm"
+          style={{
+            backgroundColor: currentColors.card,
+            backgroundImage: darkMode
+              ? "linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)"
+              : "linear-gradient(135deg, #fffbeb 0%, #ffffff 50%, #ffedd5 100%)",
+          }}
+          whileHover={{ y: -5 }}
+          transition={{ type: "spring", stiffness: 200 }}
         >
-          {/* Header */}
-          <motion.div className="text-center space-y-2" variants={itemVariants}>
-            <p
-              className="text-lg sm:text-xl font-semibold"
+          <div className="p-8 sm:p-12">
+            <motion.h2
+              className="text-3xl sm:text-5xl font-bold mb-12 text-center"
               style={{ color: currentColors.primary }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5, type: "spring", stiffness: 100 }}
             >
-              Shree Ram Ganj Bazar Sarvjanik Ganesh Utsav Mandal
-            </p>
-            <p
-              className="italic text-sm sm:text-base"
-              style={{ color: currentColors.muted }}
-            >
-              Tirora Cha Raja – Since 2017
-            </p>
-          </motion.div>
+              ✨ About Our Mandal
+            </motion.h2>
 
-          {/* Intro */}
-          <motion.p variants={itemVariants}>
-            Established in 2017, our Mandal proudly organizes{" "}
-            <span
-              className="font-semibold"
-              style={{ color: currentColors.primary }}
+            <motion.div
+              className="text-lg sm:text-xl leading-relaxed space-y-8 font-medium"
+              style={{ color: currentColors.text }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
             >
-              Tirora Cha Raja
-            </span>
-            , one of the most beloved and grand Ganesh Utsav celebrations in
-            Tirora.
-          </motion.p>
-
-          <motion.p variants={itemVariants}>
-            Guided by deep devotion and an unshakable sense of community, our
-            Mandal is a vibrant symbol of{" "}
-            <span
-              className="font-semibold"
-              style={{ color: currentColors.primary }}
-            >
-              unity, tradition
-            </span>
-            , and
-            <span
-              className="font-semibold"
-              style={{ color: currentColors.primary }}
-            >
-              {" "}
-              selfless seva
-            </span>{" "}
-            (service). Each year, we unite people not only in joyous celebration
-            but also in social good.
-          </motion.p>
-
-          {/* Contributions */}
-          <motion.div variants={itemVariants}>
-            <h3
-              className="text-xl font-semibold mb-4 flex items-center"
-              style={{ color: currentColors.primary }}
-            >
-              <span className="text-2xl mr-2">✨</span> Our Core Contributions
-            </h3>
-
-            <div className="space-y-4">
-              {[
-                {
-                  icon: "➡️",
-                  text: "Organizing vibrant Ganesh Utsav events with cultural programs, spiritual gatherings, and stunning decorations.",
-                },
-                {
-                  icon: "🩸",
-                  text: "Hosting impactful Blood Donation Camps that support public health.",
-                },
-                {
-                  icon: "🤝",
-                  text: "Helping underprivileged families through community-led initiatives.",
-                },
-                {
-                  icon: "🌱",
-                  text: "Leading tree plantation drives and environmental awareness campaigns.",
-                },
-                {
-                  icon: "🎤",
-                  text: "Encouraging youth participation and providing a platform for talent.",
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-start gap-2"
-                  variants={itemVariants}
+              {/* Header */}
+              <motion.div
+                className="text-center space-y-4"
+                variants={itemVariants}
+              >
+                <motion.p
+                  className="text-xl sm:text-2xl font-bold"
+                  style={{ color: currentColors.primary }}
                 >
-                  <span
-                    className="mt-1"
-                    style={{ color: currentColors.primary }}
-                  >
-                    {item.icon}
-                  </span>
-                  <p className="font-medium">{item.text}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                  Shree Ram Ganj Bazar Sarvjanik Ganesh Utsav Mandal
+                </motion.p>
+                <motion.p
+                  className="italic text-lg sm:text-xl"
+                  style={{ color: currentColors.muted }}
+                >
+                  Tirora Cha Raja – Since 2017
+                </motion.p>
+              </motion.div>
 
-          {/* Mission Quote */}
-          <motion.div className="text-center mt-6" variants={itemVariants}>
-            <p
-              className="font-bold text-lg sm:text-xl"
-              style={{ color: currentColors.primary }}
-            >
-              "Bhakti ke saath, Samaj Seva bhi"
-            </p>
-            <p className="text-sm mt-1" style={{ color: currentColors.muted }}>
-              (With devotion, we serve society)
-            </p>
-          </motion.div>
+              {/* Intro */}
+              <motion.p variants={itemVariants} className="text-center">
+                Established in 2017, our Mandal proudly organizes{" "}
+                <span
+                  className="font-bold text-2xl"
+                  style={{ color: currentColors.primary }}
+                >
+                  Tirora Cha Raja
+                </span>
+                , one of the most beloved and grand Ganesh Utsav celebrations in
+                Tirora.
+              </motion.p>
 
-          {/* Closing */}
-          <motion.p
-            className="text-center text-base sm:text-lg mt-4 font-medium"
-            variants={itemVariants}
-          >
-            Join us and be a part of the divine celebration and noble cause with
-            <span
-              className="font-semibold ml-1"
-              style={{ color: currentColors.primary }}
-            >
-              Tirora Cha Raja 🙏
-            </span>
-          </motion.p>
+              <motion.p variants={itemVariants} className="text-center">
+                Guided by deep devotion and an unshakable sense of community,
+                our Mandal is a vibrant symbol of{" "}
+                <span
+                  className="font-bold"
+                  style={{ color: currentColors.primary }}
+                >
+                  unity, tradition
+                </span>
+                , and
+                <span
+                  className="font-bold"
+                  style={{ color: currentColors.primary }}
+                >
+                  {" "}
+                  selfless seva
+                </span>{" "}
+                (service). Each year, we unite people not only in joyous
+                celebration but also in social good.
+              </motion.p>
+
+              {/* Contributions */}
+              <motion.div variants={itemVariants}>
+                <motion.h3
+                  className="text-2xl sm:text-3xl font-bold mb-8 flex items-center justify-center"
+                  style={{ color: currentColors.primary }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 2, type: "spring", stiffness: 150 }}
+                >
+                  <span className="text-3xl mr-3">✨</span> Our Core
+                  Contributions
+                </motion.h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    {
+                      icon: "🎭",
+                      text: "Organizing vibrant Ganesh Utsav events with cultural programs, spiritual gatherings, and stunning decorations.",
+                    },
+                    {
+                      icon: "🩸",
+                      text: "Hosting impactful Blood Donation Camps that support public health.",
+                    },
+                    {
+                      icon: "🤝",
+                      text: "Helping underprivileged families through community-led initiatives.",
+                    },
+                    {
+                      icon: "🌱",
+                      text: "Leading tree plantation drives and environmental awareness campaigns.",
+                    },
+                    {
+                      icon: "🎤",
+                      text: "Encouraging youth participation and providing a platform for talent.",
+                    },
+                    {
+                      icon: "🏛️",
+                      text: "Preserving and promoting our rich cultural heritage and traditions.",
+                    },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-start gap-4 p-4 rounded-2xl backdrop-blur-sm border border-white/20"
+                      style={{
+                        backgroundColor: darkMode
+                          ? "rgba(30, 41, 59, 0.5)"
+                          : "rgba(255, 255, 255, 0.5)",
+                      }}
+                      variants={itemVariants}
+                      whileHover={{
+                        scale: 1.02,
+                        y: -2,
+                        transition: { type: "spring", stiffness: 300 },
+                      }}
+                    >
+                      <span
+                        className="text-3xl mt-1"
+                        style={{ color: currentColors.primary }}
+                      >
+                        {item.icon}
+                      </span>
+                      <p className="font-medium leading-relaxed">{item.text}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Mission Quote */}
+              <motion.div className="text-center mt-12" variants={itemVariants}>
+                <motion.p
+                  className="font-bold text-2xl sm:text-3xl mb-3"
+                  style={{ color: currentColors.primary }}
+                >
+                  "Bhakti ke saath, Samaj Seva bhi"
+                </motion.p>
+                <motion.p
+                  className="text-lg sm:text-xl"
+                  style={{ color: currentColors.muted }}
+                >
+                  (With devotion, we serve society)
+                </motion.p>
+              </motion.div>
+
+              {/* Closing */}
+              <motion.p
+                className="text-center text-lg sm:text-xl mt-8 font-medium"
+                variants={itemVariants}
+              >
+                Join us and be a part of the divine celebration and noble cause
+                with
+                <span
+                  className="font-bold ml-2 text-2xl"
+                  style={{ color: currentColors.primary }}
+                >
+                  Tirora Cha Raja 🙏
+                </span>
+              </motion.p>
+            </motion.div>
+          </div>
         </motion.div>
       </motion.section>
 

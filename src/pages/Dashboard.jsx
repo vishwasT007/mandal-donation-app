@@ -154,34 +154,74 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: "Total Collection",
+      title: "Total Donations",
+      value: donations.length,
+      icon: BarChart3,
+      color: "bg-blue-100 dark:bg-blue-900/30",
+      iconColor: "text-blue-600 dark:text-blue-400",
+    },
+    {
+      title: "Total Amount",
       value: `₹${totalAmount.toLocaleString()}`,
       icon: DollarSign,
-      color: "bg-yellow-100 text-yellow-800",
-      iconColor: "text-yellow-600",
+      color: "bg-green-100 dark:bg-green-900/30",
+      iconColor: "text-green-600 dark:text-green-400",
     },
     {
-      title: "Today's Collection",
+      title: "Today's Donations",
+      value: todayDonations.length,
+      icon: Calendar,
+      color: "bg-purple-100 dark:bg-purple-900/30",
+      iconColor: "text-purple-600 dark:text-purple-400",
+    },
+    {
+      title: "Today's Amount",
       value: `₹${todayAmount.toLocaleString()}`,
       icon: TrendingUp,
-      color: "bg-green-100 text-green-800",
-      iconColor: "text-green-600",
-    },
-    {
-      title: "Total Donors",
-      value: donations.length.toString(),
-      icon: Users,
-      color: "bg-blue-100 text-blue-800",
-      iconColor: "text-blue-600",
-    },
-    {
-      title: "Today's Donors",
-      value: todayDonations.length.toString(),
-      icon: Calendar,
-      color: "bg-purple-100 text-purple-800",
-      iconColor: "text-purple-600",
+      color: "bg-orange-100 dark:bg-orange-900/30",
+      iconColor: "text-orange-600 dark:text-orange-400",
     },
   ];
+
+  // Admin-only access control - moved after hooks
+  if (!user || user.role !== "admin") {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-orange-50 via-white to-orange-100"
+        }`}
+      >
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full mb-4">
+            <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+          </div>
+          <h1
+            className={`text-2xl font-bold mb-2 transition-colors ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Access Denied
+          </h1>
+          <p
+            className={`text-lg transition-colors ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
+            Only administrators can access the Dashboard.
+          </p>
+          <p
+            className={`text-sm mt-2 transition-colors ${
+              darkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            Your role: {user?.role || "Not logged in"}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
