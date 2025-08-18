@@ -202,3 +202,52 @@ img {
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
     border-color 0.2s ease-in-out;
 }
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Reduce motion on mobile for better performance */
+  * {
+    animation-duration: 0.5s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.3s !important;
+  }
+
+  /* Optimize scrolling on mobile */
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Reduce shadow complexity on mobile */
+  .shadow-2xl {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Optimize backdrop blur on mobile */
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+  }
+}
+
+/* Reduced motion support for accessibility and performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* CSS Variables for motion reduction */
+:root {
+  --motion-reduce: 0;
+}
+
+/* Apply motion reduction when needed */
+[style*="--motion-reduce: 1"] * {
+  animation-duration: 0.3s !important;
+  transition-duration: 0.2s !important;
+}

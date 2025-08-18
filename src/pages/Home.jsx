@@ -11,7 +11,27 @@ const Home = () => {
   const [targetAmount, setTargetAmount] = useState(50000);
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+
+  // Detect mobile device and reduce motion for better performance
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+
+      // Reduce motion on mobile for better performance
+      if (mobile) {
+        document.documentElement.style.setProperty("--motion-reduce", "1");
+      } else {
+        document.documentElement.style.setProperty("--motion-reduce", "0");
+      }
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchDonations = async (retryCount = 0) => {
@@ -119,57 +139,61 @@ const Home = () => {
 
   const currentColors = darkMode ? colors.dark : colors.light;
 
-  // Enhanced animation variants with spring physics
+  // Optimized animation variants for mobile performance
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
+        staggerChildren: isMobile ? 0.05 : 0.15,
+        delayChildren: isMobile ? 0.05 : 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    hidden: {
+      opacity: 0,
+      y: isMobile ? 15 : 30,
+      scale: isMobile ? 0.98 : 0.95,
+    },
     show: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 100,
-        damping: 15,
-        duration: 0.8,
+        stiffness: isMobile ? 80 : 100,
+        damping: isMobile ? 20 : 15,
+        duration: isMobile ? 0.4 : 0.8,
       },
     },
   };
 
   const heroVariants = {
-    hidden: { opacity: 0, y: -50 },
+    hidden: { opacity: 0, y: isMobile ? -25 : -50 },
     show: {
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
-        stiffness: 80,
-        damping: 20,
-        duration: 1.2,
+        stiffness: isMobile ? 60 : 80,
+        damping: isMobile ? 25 : 20,
+        duration: isMobile ? 0.8 : 1.2,
       },
     },
   };
 
   const statsVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: { opacity: 0, scale: isMobile ? 0.9 : 0.8 },
     show: {
       opacity: 1,
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 120,
-        damping: 12,
-        duration: 0.6,
+        stiffness: isMobile ? 100 : 120,
+        damping: isMobile ? 15 : 12,
+        duration: isMobile ? 0.3 : 0.6,
       },
     },
   };
@@ -202,7 +226,7 @@ const Home = () => {
               ? "bg-yellow-200 text-gray-900 hover:bg-yellow-300"
               : "bg-gray-800 text-yellow-200 hover:bg-gray-700"
           }`}
-          whileHover={{ scale: 1.1, rotate: 180 }}
+          whileHover={!isMobile ? { scale: 1.1, rotate: 180 } : {}}
           whileTap={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300 }}
           aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
@@ -222,23 +246,25 @@ const Home = () => {
         animate="show"
         variants={heroVariants}
       >
-        {/* Animated background elements */}
-        <motion.div
-          className="absolute inset-0 opacity-10"
-          animate={{
-            rotate: [0, 360],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        >
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
-          <div className="absolute top-32 right-20 w-24 h-24 bg-white rounded-full"></div>
-          <div className="absolute bottom-20 left-32 w-20 h-20 bg-white rounded-full"></div>
-        </motion.div>
+        {/* Animated background elements - Reduced on mobile for performance */}
+        {!isMobile && (
+          <motion.div
+            className="absolute inset-0 opacity-10"
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          >
+            <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full"></div>
+            <div className="absolute top-32 right-20 w-24 h-24 bg-white rounded-full"></div>
+            <div className="absolute bottom-20 left-32 w-20 h-20 bg-white rounded-full"></div>
+          </motion.div>
+        )}
 
         {/* Top Right Buttons - Enhanced with better positioning */}
         <div className="fixed top-6 right-20 z-50 flex items-center gap-3">
@@ -270,7 +296,7 @@ const Home = () => {
               src="/logo.png"
               alt="Tiroda Cha Raja Logo"
               className="w-[140px] xs:w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px] h-auto max-w-[95%] drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
-              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileHover={!isMobile ? { scale: 1.05, rotate: 5 } : {}}
               transition={{ type: "spring", stiffness: 200 }}
             />
           </div>
@@ -323,11 +349,15 @@ const Home = () => {
                 backgroundImage: `linear-gradient(135deg, ${currentColors.stats.total} 0%, ${currentColors.stats.total}dd 100%)`,
               }}
               variants={statsVariants}
-              whileHover={{
-                scale: 1.05,
-                y: -8,
-                transition: { type: "spring", stiffness: 300 },
-              }}
+              whileHover={
+                !isMobile
+                  ? {
+                      scale: 1.05,
+                      y: -8,
+                      transition: { type: "spring", stiffness: 300 },
+                    }
+                  : {}
+              }
             >
               <div className="text-center">
                 <div className="text-4xl mb-3">💰</div>
@@ -365,11 +395,15 @@ const Home = () => {
                 backgroundImage: `linear-gradient(135deg, ${currentColors.stats.target} 0%, ${currentColors.stats.target}dd 100%)`,
               }}
               variants={statsVariants}
-              whileHover={{
-                scale: 1.05,
-                y: -8,
-                transition: { type: "spring", stiffness: 300 },
-              }}
+              whileHover={
+                !isMobile
+                  ? {
+                      scale: 1.05,
+                      y: -8,
+                      transition: { type: "spring", stiffness: 300 },
+                    }
+                  : {}
+              }
             >
               <div className="text-center">
                 <div className="text-4xl mb-3">🎯</div>
@@ -407,11 +441,15 @@ const Home = () => {
                 backgroundImage: `linear-gradient(135deg, ${currentColors.stats.donors} 0%, ${currentColors.stats.donors}dd 100%)`,
               }}
               variants={statsVariants}
-              whileHover={{
-                scale: 1.05,
-                y: -8,
-                transition: { type: "spring", stiffness: 300 },
-              }}
+              whileHover={
+                !isMobile
+                  ? {
+                      scale: 1.05,
+                      y: -8,
+                      transition: { type: "spring", stiffness: 300 },
+                    }
+                  : {}
+              }
             >
               <div className="text-center">
                 <div className="text-4xl mb-3">👥</div>
