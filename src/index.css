@@ -20,6 +20,22 @@
   --transition: all 0.2s ease-in-out;
 }
 
+/* Dark Mode CSS Variables */
+.dark {
+  --primary: #f97316;
+  --primary-dark: #ea580c;
+  --secondary: #fb923c;
+  --accent: #fdba74;
+  --background: #0f172a;
+  --surface: #1e293b;
+  --text: #f8fafc;
+  --text-muted: #cbd5e1;
+  --border: #334155;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
 /* Global Styles */
 * {
   box-sizing: border-box;
@@ -31,6 +47,7 @@ body {
   line-height: 1.6;
   color: var(--text);
   background-color: var(--background);
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
 /* Focus Styles */
@@ -80,16 +97,16 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-muted);
 }
 
 /* Utility Classes */
@@ -98,6 +115,7 @@ img {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 .btn {
@@ -132,7 +150,7 @@ img {
 }
 
 .btn-secondary:hover {
-  background: #f8fafc;
+  background: var(--background);
   transform: translateY(-1px);
 }
 
@@ -144,6 +162,7 @@ img {
   font-size: 1rem;
   transition: var(--transition);
   background: var(--surface);
+  color: var(--text);
 }
 
 .form-input:focus {
@@ -176,4 +195,10 @@ img {
   --safe-text: #1e293b;
   --safe-text-muted: #64748b;
   --safe-border: #e2e8f0;
+}
+
+/* Dark mode transitions */
+* {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
 }

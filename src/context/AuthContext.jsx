@@ -1,106 +1,96 @@
-// import { createContext, useContext, useState, useEffect } from "react";
-// import { getAuth, onAuthStateChanged } from "firebase/auth";
-// import { doc, getDoc } from "firebase/firestore";
-// import { db } from "../firebase";
-
-// const AuthContext = createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null); // { uid, email, name, role }
-//   const [loading, setLoading] = useState(true); // NEW
-
-//   useEffect(() => {
-//     const auth = getAuth();
-//     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-//       if (currentUser) {
-//         const docRef = doc(db, "users", currentUser.uid);
-//         const docSnap = await getDoc(docRef);
-//         setUser({
-//           uid: currentUser.uid,
-//           email: currentUser.email,
-//           ...docSnap.data(),
-//         });
-//       } else {
-//         setUser(null);
-//       }
-//       setLoading(false); // DONE
-//     });
-
-//     return () => unsubscribe();
-//   }, []);
-
-//   return (
-//     <AuthContext.Provider value={{ user, loading }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => useContext(AuthContext);
-
-// New code
-
-// src/context/AuthContext.jsx
-
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 const AuthContext = createContext();
 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // { uid, email, name, role }
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // Check localStorage for saved dark mode preference
+    const savedDarkMode = localStorage.getItem("darkMode");
+    if (savedDarkMode !== null) {
+      setDarkMode(JSON.parse(savedDarkMode));
+    } else {
+      // Check user's preferred color scheme
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        setDarkMode(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Apply dark mode to HTML element
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    // Save preference to localStorage
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
 
   useEffect(() => {
     const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
         try {
-          const docRef = doc(db, "users", currentUser.uid);
-          let userData = {
-            uid: currentUser.uid,
-            email: currentUser.email,
-          };
-
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            userData = {
-              ...userData,
-              ...docSnap.data(),
-            };
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            setUser({
+              uid: user.uid,
+              email: user.email,
+              ...userDoc.data(),
+            });
           } else {
-            console.warn("⚠️ Firestore user document not found.");
-            userData = {
-              ...userData,
-              name: "Unknown",
-              role: "guest", // optional fallback
-            };
+            setUser({
+              uid: user.uid,
+              email: user.email,
+              role: "public",
+            });
           }
-
-          setUser(userData);
         } catch (error) {
-          console.error("❌ Error fetching user document:", error);
-          setUser(null);
+          console.error("Error fetching user data:", error);
+          setUser({
+            uid: user.uid,
+            email: user.email,
+            role: "public",
+          });
         }
       } else {
         setUser(null);
       }
-
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const value = {
+    user,
+    loading,
+    darkMode,
+    toggleDarkMode,
+  };
 
-export const useAuth = () => useContext(AuthContext);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

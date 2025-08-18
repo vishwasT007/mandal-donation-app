@@ -6,6 +6,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { useAuth } from "../context/AuthContext";
 import { AnimatePresence } from "framer-motion";
 import {
   CheckCircle,
@@ -26,9 +27,9 @@ const DonationForm = () => {
     utrNumber: "",
   });
 
-  const [receiptLink, setReceiptLink] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { darkMode } = useAuth();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -62,7 +63,7 @@ const DonationForm = () => {
 
       // 3. Generate PDF receipt
       const receiptBlobUrl = await generateReceiptPDF(savedData);
-      setReceiptLink(receiptBlobUrl);
+      // setReceiptLink(receiptBlobUrl); // This line is removed
 
       // 4. Ganpati message
       const ganpatiPhrases = [
@@ -139,7 +140,13 @@ const DonationForm = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
+    <div
+      className={`min-h-screen py-8 px-4 transition-colors duration-200 ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-orange-50 via-white to-orange-100"
+      }`}
+    >
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <AnimatePresence>
@@ -151,10 +158,18 @@ const DonationForm = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg mb-4">
               {/* <Heart className="h-8 w-8 text-white" /> */}
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+            <h1
+              className={`text-3xl sm:text-4xl font-bold mb-2 transition-colors ${
+                darkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
               Make a Donation
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p
+              className={`text-lg transition-colors ${
+                darkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Support our Ganesh Chaturthi celebrations
             </p>
           </div>
@@ -181,7 +196,9 @@ const DonationForm = () => {
                     >
                       <label
                         htmlFor={field.name}
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className={`block text-sm font-medium mb-2 transition-colors ${
+                          darkMode ? "text-gray-200" : "text-gray-700"
+                        }`}
                       >
                         {field.label}
                         {field.required && (
@@ -199,7 +216,6 @@ const DonationForm = () => {
                             value={form[field.name]}
                             onChange={handleChange}
                             required={field.required}
-                            disabled={isSubmitting}
                           />
                         ) : (
                           <input
@@ -211,7 +227,6 @@ const DonationForm = () => {
                             value={form[field.name]}
                             onChange={handleChange}
                             required={field.required}
-                            disabled={isSubmitting}
                             pattern={field.pattern}
                             maxLength={field.maxLength}
                           />
@@ -222,81 +237,99 @@ const DonationForm = () => {
                 })}
               </div>
 
-              {/* Payment Mode */}
-              <div>
+              {/* Payment Mode Selection */}
+              <div className="space-y-4">
                 <label
-                  htmlFor="paymentMode"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className={`block text-sm font-medium transition-colors ${
+                    darkMode ? "text-gray-200" : "text-gray-700"
+                  }`}
                 >
                   Payment Mode <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <select
-                    id="paymentMode"
-                    name="paymentMode"
-                    className="form-input"
-                    value={form.paymentMode}
-                    onChange={handleChange}
-                    required
-                    disabled={isSubmitting}
-                  >
-                    <option value="">Select Payment Mode</option>
-                    <option value="Cash">Cash</option>
-                    <option value="UPI">UPI</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Credit">Credit</option>
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {["Cash", "UPI", "Bank Transfer", "Credit"].map((mode) => (
+                    <label
+                      key={mode}
+                      className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
+                        form.paymentMode === mode
+                          ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
+                          : darkMode
+                          ? "border-gray-600 hover:border-gray-500"
+                          : "border-gray-300 hover:border-gray-400"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="paymentMode"
+                        value={mode}
+                        checked={form.paymentMode === mode}
+                        onChange={handleChange}
+                        className="sr-only"
+                        required
+                      />
+                      <div className="flex items-center space-x-2">
+                        {mode === "Credit" ? (
+                          <CreditCard className="h-4 w-4 text-orange-600" />
+                        ) : mode === "UPI" ? (
+                          <FileText className="h-4 w-4 text-blue-600" />
+                        ) : (
+                          <IndianRupee className="h-4 w-4 text-green-600" />
+                        )}
+                        <span
+                          className={`text-sm font-medium transition-colors ${
+                            form.paymentMode === mode
+                              ? "text-orange-700 dark:text-orange-300"
+                              : darkMode
+                              ? "text-gray-300"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {mode}
+                        </span>
+                      </div>
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              {/* UTR Number for UPI */}
-              <AnimatePresence>
-                {form.paymentMode === "UPI" && (
-                  <div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
+              {/* UTR Number Field (only for UPI) */}
+              {form.paymentMode === "UPI" && (
+                <div>
+                  <label
+                    htmlFor="utrNumber"
+                    className={`block text-sm font-medium mb-2 transition-colors ${
+                      darkMode ? "text-gray-200" : "text-gray-700"
+                    }`}
                   >
-                    <label
-                      htmlFor="utrNumber"
-                      className="block text-sm font-medium text-gray-700 mb-2"
-                    >
-                      UPI Transaction ID <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="utrNumber"
-                        name="utrNumber"
-                        type="text"
-                        placeholder="Enter UPI transaction ID"
-                        className="form-input"
-                        value={form.utrNumber}
-                        onChange={handleChange}
-                        required={form.paymentMode === "UPI"}
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                  </div>
-                )}
-              </AnimatePresence>
+                    UTR Number <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="utrNumber"
+                    name="utrNumber"
+                    placeholder="Enter UTR number"
+                    className="form-input"
+                    value={form.utrNumber}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              )}
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full btn btn-primary text-lg py-4 ${
-                  isSubmitting ? "opacity-75 cursor-not-allowed" : ""
-                }`}
+                className="w-full btn btn-primary py-3 text-lg font-semibold"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-5 w-5 spinner" />
-                    Processing Donation...
+                    Processing...
                   </>
                 ) : (
                   <>
-                    {/* <Heart className="h-5 w-5" /> */}
+                    <CheckCircle className="h-5 w-5" />
                     Submit Donation
                   </>
                 )}
@@ -307,79 +340,33 @@ const DonationForm = () => {
             <AnimatePresence>
               {success && (
                 <div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <div>
-                      <p className="font-medium text-green-800">
+                      <p
+                        className={`text-sm font-medium transition-colors ${
+                          darkMode ? "text-green-300" : "text-green-800"
+                        }`}
+                      >
                         Donation submitted successfully!
                       </p>
-                      <p className="text-sm text-green-600">
-                        Receipt has been generated and SMS sent.
+                      <p
+                        className={`text-xs transition-colors ${
+                          darkMode ? "text-green-400" : "text-green-600"
+                        }`}
+                      >
+                        Receipt has been generated and sent via SMS.
                       </p>
                     </div>
                   </div>
                 </div>
               )}
             </AnimatePresence>
-
-            {/* Receipt Link */}
-            {receiptLink && (
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-blue-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-blue-800">
-                      Receipt Generated
-                    </p>
-                    <a
-                      href={receiptLink}
-                      className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Receipt
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </AnimatePresence>
-
-        {/* Info Card */}
-        <AnimatePresence>
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-6 card p-6"
-          >
-            <div className="flex items-start gap-3">
-              {/* <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" /> */}
-              <div>
-                <h3 className="font-medium text-gray-900 mb-2">
-                  Important Information
-                </h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>
-                    • All donations are used for Ganesh Chaturthi celebrations
-                  </li>
-                  <li>
-                    • Receipt will be automatically generated and sent via SMS
-                  </li>
-                  <li>• For UPI payments, please provide the transaction ID</li>
-                  <li>
-                    • Your contribution helps organize cultural and social
-                    events
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </AnimatePresence>
       </div>

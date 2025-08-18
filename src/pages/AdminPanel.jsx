@@ -44,7 +44,7 @@ import {
 } from "firebase/storage";
 
 const AdminPanel = () => {
-  const { user } = useAuth();
+  const { user, darkMode } = useAuth();
   const [donations, setDonations] = useState([]);
   const [targetAmount, setTargetAmount] = useState("");
   const [saved, setSaved] = useState(false);
@@ -291,17 +291,35 @@ const AdminPanel = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+          darkMode
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-orange-50 via-white to-orange-100"
+        }`}
+      >
         <div className="flex items-center gap-3">
           <Loader2 className="h-6 w-6 text-orange-600 spinner" />
-          <span className="text-gray-600">Loading admin panel...</span>
+          <span
+            className={`transition-colors ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
+            Loading admin panel...
+          </span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 py-8 px-4">
+    <div
+      className={`min-h-screen py-8 px-4 transition-colors duration-200 ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-orange-50 via-white to-orange-100"
+      }`}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Success Messages */}
         <AnimatePresence>
@@ -329,10 +347,18 @@ const AdminPanel = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg mb-4">
             <Crown className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <h1
+            className={`text-3xl sm:text-4xl font-bold mb-2 transition-colors ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
             Admin Panel
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p
+            className={`text-lg transition-colors ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             Manage donations, targets, and volunteer accounts
           </p>
         </motion.div>
@@ -348,25 +374,55 @@ const AdminPanel = () => {
               className="card p-6"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Download className="h-5 w-5 text-blue-600" />
+                <div
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode ? "bg-blue-900/30" : "bg-blue-100"
+                  }`}
+                >
+                  <Download
+                    className={`h-5 w-5 transition-colors ${
+                      darkMode ? "text-blue-400" : "text-blue-600"
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3
+                    className={`text-lg font-semibold transition-colors ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     Export Data
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p
+                    className={`text-sm transition-colors ${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     Download donation records as Excel file
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm text-blue-800 mb-2">
+                <div
+                  className={`p-4 rounded-lg transition-colors ${
+                    darkMode
+                      ? "bg-blue-900/20 border border-blue-800/50"
+                      : "bg-blue-50"
+                  }`}
+                >
+                  <p
+                    className={`text-sm mb-2 transition-colors ${
+                      darkMode ? "text-blue-200" : "text-blue-800"
+                    }`}
+                  >
                     <strong>Total Donations:</strong> {donations.length}
                   </p>
-                  <p className="text-sm text-blue-800">
+                  <p
+                    className={`text-sm transition-colors ${
+                      darkMode ? "text-blue-200" : "text-blue-800"
+                    }`}
+                  >
                     <strong>Total Amount:</strong> ₹
                     {donations
                       .reduce((sum, d) => sum + Number(d.amount || 0), 0)
@@ -402,14 +458,30 @@ const AdminPanel = () => {
               className="card p-6"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Target className="h-5 w-5 text-green-600" />
+                <div
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode ? "bg-green-900/30" : "bg-green-100"
+                  }`}
+                >
+                  <Target
+                    className={`h-5 w-5 transition-colors ${
+                      darkMode ? "text-green-400" : "text-green-600"
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3
+                    className={`text-lg font-semibold transition-colors ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     Donation Target
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p
+                    className={`text-sm transition-colors ${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     Set the expected donation goal
                   </p>
                 </div>
@@ -419,7 +491,9 @@ const AdminPanel = () => {
                 <div>
                   <label
                     htmlFor="targetAmount"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className={`block text-sm font-medium mb-2 transition-colors ${
+                      darkMode ? "text-gray-200" : "text-gray-700"
+                    }`}
                   >
                     Target Amount (₹)
                   </label>
@@ -446,10 +520,18 @@ const AdminPanel = () => {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg"
+                      className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${
+                        darkMode
+                          ? "bg-green-900/20 border border-green-800/50"
+                          : "bg-green-50 border border-green-200"
+                      }`}
                     >
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-sm text-green-800 font-medium">
+                      <span
+                        className={`text-sm font-medium transition-colors ${
+                          darkMode ? "text-green-300" : "text-green-800"
+                        }`}
+                      >
                         Target amount saved successfully!
                       </span>
                     </motion.div>
@@ -469,14 +551,30 @@ const AdminPanel = () => {
               className="card p-6"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Users className="h-5 w-5 text-purple-600" />
+                <div
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode ? "bg-purple-900/30" : "bg-purple-100"
+                  }`}
+                >
+                  <Users
+                    className={`h-5 w-5 transition-colors ${
+                      darkMode ? "text-purple-400" : "text-purple-600"
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3
+                    className={`text-lg font-semibold transition-colors ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     Volunteer Management
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p
+                    className={`text-sm transition-colors ${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     Create new volunteer accounts
                   </p>
                 </div>
@@ -493,37 +591,73 @@ const AdminPanel = () => {
               className="card p-6"
             >
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <Shield className="h-5 w-5 text-orange-600" />
+                <div
+                  className={`p-2 rounded-lg transition-colors ${
+                    darkMode ? "bg-orange-900/30" : "bg-orange-100"
+                  }`}
+                >
+                  <Shield
+                    className={`h-5 w-5 transition-colors ${
+                      darkMode ? "text-orange-400" : "text-orange-600"
+                    }`}
+                  />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3
+                    className={`text-lg font-semibold transition-colors ${
+                      darkMode ? "text-white" : "text-gray-900"
+                    }`}
+                  >
                     Admin Access
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p
+                    className={`text-sm transition-colors ${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     You have full administrative privileges
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div
+                  className={`flex items-center gap-2 text-sm transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span>View all donation records</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div
+                  className={`flex items-center gap-2 text-sm transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span>Export data to Excel</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div
+                  className={`flex items-center gap-2 text-sm transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span>Manage donation targets</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div
+                  className={`flex items-center gap-2 text-sm transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span>Create volunteer accounts</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div
+                  className={`flex items-center gap-2 text-sm transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span>Delete donation entries</span>
                 </div>
@@ -576,41 +710,96 @@ const AdminPanel = () => {
           transition={{ delay: 0.7 }}
           className="mt-8 card p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3
+            className={`text-lg font-semibold mb-4 flex items-center gap-2 transition-colors ${
+              darkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
             <CreditCard className="h-5 w-5 text-orange-600" />
             Due (Credit) Donations
           </h3>
           {donations.filter((d) => d.due).length === 0 ? (
-            <div className="text-gray-600">No due donations.</div>
+            <div
+              className={`transition-colors ${
+                darkMode ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              No due donations.
+            </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y transition-colors">
+                <thead
+                  className={`transition-colors ${
+                    darkMode ? "bg-gray-800" : "bg-gray-50"
+                  }`}
+                >
                   <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th
+                      className={`px-4 py-2 text-left text-xs font-medium uppercase transition-colors ${
+                        darkMode ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
                       Donor
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th
+                      className={`px-4 py-2 text-left text-xs font-medium uppercase transition-colors ${
+                        darkMode ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
                       Amount
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th
+                      className={`px-4 py-2 text-left text-xs font-medium uppercase transition-colors ${
+                        darkMode ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
                       Date
                     </th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th
+                      className={`px-4 py-2 text-left text-xs font-medium uppercase transition-colors ${
+                        darkMode ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
                       Action
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody
+                  className={`divide-y transition-colors ${
+                    darkMode
+                      ? "bg-gray-900 divide-gray-700"
+                      : "bg-white divide-gray-200"
+                  }`}
+                >
                   {donations
                     .filter((d) => d.due)
                     .map((d) => (
-                      <tr key={d.id}>
-                        <td className="px-4 py-2">{d.fullName}</td>
-                        <td className="px-4 py-2">
+                      <tr
+                        key={d.id}
+                        className={`transition-colors ${
+                          darkMode ? "hover:bg-gray-800" : "hover:bg-gray-50"
+                        }`}
+                      >
+                        <td
+                          className={`px-4 py-2 transition-colors ${
+                            darkMode ? "text-white" : "text-gray-900"
+                          }`}
+                        >
+                          {d.fullName}
+                        </td>
+                        <td
+                          className={`px-4 py-2 transition-colors ${
+                            darkMode ? "text-white" : "text-gray-900"
+                          }`}
+                        >
                           ₹{Number(d.amount).toLocaleString()}
                         </td>
-                        <td className="px-4 py-2">
+                        <td
+                          className={`px-4 py-2 transition-colors ${
+                            darkMode ? "text-gray-300" : "text-gray-500"
+                          }`}
+                        >
                           {d.timestamp?.seconds
                             ? new Date(
                                 d.timestamp.seconds * 1000
@@ -639,7 +828,11 @@ const AdminPanel = () => {
         {/* Gallery Management */}
         <div className="mt-8 card p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h3
+              className={`text-lg font-semibold flex items-center gap-2 transition-colors ${
+                darkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
               <Image className="h-5 w-5 text-orange-600" />
               Gallery Management
             </h3>
@@ -657,10 +850,18 @@ const AdminPanel = () => {
             {galleryImages.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <div className="text-6xl mb-4">📸</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3
+                  className={`text-xl font-semibold mb-2 transition-colors ${
+                    darkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   No Images Uploaded Yet
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p
+                  className={`mb-4 transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   Start by uploading some images to the gallery.
                 </p>
                 <button
@@ -845,9 +1046,17 @@ const AdminPanel = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md relative">
+              <div
+                className={`rounded-xl shadow-xl p-8 w-full max-w-md relative transition-colors ${
+                  darkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <button
-                  className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
+                  className={`absolute top-3 right-3 transition-colors ${
+                    darkMode
+                      ? "text-gray-400 hover:text-gray-200"
+                      : "text-gray-400 hover:text-gray-700"
+                  }`}
                   onClick={() => {
                     setShowClearModal(false);
                     setSelectedDue(null);
@@ -856,10 +1065,18 @@ const AdminPanel = () => {
                 >
                   <X className="h-5 w-5" />
                 </button>
-                <h2 className="text-xl font-bold mb-4">
+                <h2
+                  className={`text-xl font-bold mb-4 transition-colors ${
+                    darkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
                   Clear Due for {selectedDue.fullName}
                 </h2>
-                <p className="mb-4 text-gray-600">
+                <p
+                  className={`mb-4 transition-colors ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   Select payment mode to clear this due:
                 </p>
                 <select
@@ -1078,9 +1295,17 @@ const AdminPanel = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md relative">
+              <div
+                className={`rounded-xl shadow-xl p-8 w-full max-w-md relative transition-colors ${
+                  darkMode ? "bg-gray-800" : "bg-white"
+                }`}
+              >
                 <button
-                  className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
+                  className={`absolute top-3 right-3 transition-colors ${
+                    darkMode
+                      ? "text-gray-400 hover:text-gray-200"
+                      : "text-gray-400 hover:text-gray-700"
+                  }`}
                   onClick={() => {
                     setShowGalleryModal(false);
                     setGalleryForm({
@@ -1093,11 +1318,21 @@ const AdminPanel = () => {
                 >
                   <X className="h-5 w-5" />
                 </button>
-                <h2 className="text-xl font-bold mb-4">Upload Gallery Image</h2>
+                <h2
+                  className={`text-xl font-bold mb-4 transition-colors ${
+                    darkMode ? "text-white" : "text-gray-900"
+                  }`}
+                >
+                  Upload Gallery Image
+                </h2>
 
                 <form onSubmit={handleImageUpload} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      className={`block text-sm font-medium mb-2 transition-colors ${
+                        darkMode ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
                       Image Title <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1112,7 +1347,11 @@ const AdminPanel = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      className={`block text-sm font-medium mb-2 transition-colors ${
+                        darkMode ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
                       Year <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -1128,7 +1367,11 @@ const AdminPanel = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      className={`block text-sm font-medium mb-2 transition-colors ${
+                        darkMode ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
                       Category <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -1144,7 +1387,11 @@ const AdminPanel = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label
+                      className={`block text-sm font-medium mb-2 transition-colors ${
+                        darkMode ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
                       Image <span className="text-red-500">*</span>
                     </label>
                     <input
