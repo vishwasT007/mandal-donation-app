@@ -3,6 +3,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, AlertCircle, Shield, User, Lock } from "lucide-react";
 
@@ -98,59 +99,59 @@ const LoginPage = () => {
           className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8"
         >
           <div className="text-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              श्रीराम गंज बाजार सार्वजनिक गणेश उत्सव मंडळ
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+              Sign In
             </h2>
-            <p className="text-sm text-gray-500">
-              Tirora Cha Raja - Donation Management
-            </p>
+            <p className="text-gray-600">Enter your credentials to continue</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Email Field */}
-            <motion.div
+            <div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
+              className="space-y-2"
             >
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700"
               >
                 Email Address
               </label>
               <div className="relative">
                 <input
+                  type="email"
                   id="email"
                   name="email"
-                  type="email"
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 pl-12 text-base rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  className="w-full px-4 py-3 pl-12 pr-4 text-base rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm"
                   value={form.email}
                   onChange={handleChange}
                   required
                 />
                 <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               </div>
-            </motion.div>
+            </div>
 
             {/* Password Field */}
-            <motion.div
+            <div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
+              className="space-y-2"
             >
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700"
               >
                 Password
               </label>
               <div className="relative">
                 <input
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   className="w-full px-4 py-3 pl-12 pr-12 text-base rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all duration-200 bg-white/50 backdrop-blur-sm"
                   value={form.password}
@@ -170,7 +171,7 @@ const LoginPage = () => {
                   )}
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             {/* Submit Button */}
             <motion.button

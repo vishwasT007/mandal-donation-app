@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-// Firebase configuration with fallbacks for production
+// Firebase configuration - Production values are hardcoded for Firebase Hosting
 const firebaseConfig = {
   apiKey:
     import.meta.env.VITE_FIREBASE_API_KEY ||
@@ -22,20 +22,28 @@ const firebaseConfig = {
     "1:429069952935:web:531a52876ea4fcea72b882",
 };
 
-// Log configuration for debugging (only in development)
-if (import.meta.env.DEV) {
-  console.log("Firebase Config:", {
-    apiKey: firebaseConfig.apiKey ? "***" : "MISSING",
-    authDomain: firebaseConfig.authDomain,
-    projectId: firebaseConfig.projectId,
-    storageBucket: firebaseConfig.storageBucket,
-    messagingSenderId: firebaseConfig.messagingSenderId,
-    appId: firebaseConfig.appId,
-  });
+// Log configuration status
+console.log("🔥 Firebase configuration loaded");
+console.log("Environment:", import.meta.env.MODE);
+console.log("Project ID:", firebaseConfig.projectId);
+console.log(
+  "Using env vars:",
+  import.meta.env.VITE_FIREBASE_API_KEY ? "Yes" : "No (using fallbacks)"
+);
+
+// Initialize Firebase
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+  console.log("✅ Firebase initialized successfully");
+} catch (error) {
+  console.error("❌ Firebase initialization failed:", error);
+  throw error;
 }
 
-const app = initializeApp(firebaseConfig);
-
+// Initialize services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+export default app;

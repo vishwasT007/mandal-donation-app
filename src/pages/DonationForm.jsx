@@ -1,25 +1,20 @@
 import { useState } from "react";
-import { db } from "../firebase";
 import {
   collection,
   addDoc,
   getDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { generateReceiptPDF } from "../utils/generateReceiptPDF";
-import { motion, AnimatePresence } from "framer-motion";
+import { db } from "../firebase";
+import { AnimatePresence } from "framer-motion";
 import {
-  User,
-  Phone,
-  MapPin,
+  CheckCircle,
+  Loader2,
   IndianRupee,
   CreditCard,
   FileText,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  Heart,
 } from "lucide-react";
+import { generateReceiptPDF } from "../utils/generateReceiptPDF";
 
 const DonationForm = () => {
   const [form, setForm] = useState({
@@ -154,7 +149,7 @@ const DonationForm = () => {
             className="text-center mb-8"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg mb-4">
-              <Heart className="h-8 w-8 text-white" />
+              {/* <Heart className="h-8 w-8 text-white" /> */}
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
               Make a Donation
@@ -301,7 +296,7 @@ const DonationForm = () => {
                   </>
                 ) : (
                   <>
-                    <Heart className="h-5 w-5" />
+                    {/* <Heart className="h-5 w-5" /> */}
                     Submit Donation
                   </>
                 )}
@@ -365,7 +360,7 @@ const DonationForm = () => {
             className="mt-6 card p-6"
           >
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" />
+              {/* <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" /> */}
               <div>
                 <h3 className="font-medium text-gray-900 mb-2">
                   Important Information
