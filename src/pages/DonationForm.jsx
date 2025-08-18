@@ -14,6 +14,7 @@ import {
   IndianRupee,
   CreditCard,
   FileText,
+  Heart,
 } from "lucide-react";
 import { generateReceiptPDF } from "../utils/generateReceiptPDF";
 
@@ -156,7 +157,7 @@ const DonationForm = () => {
             className="text-center mb-8"
           >
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg mb-4">
-              {/* <Heart className="h-8 w-8 text-white" /> */}
+              <Heart className="h-8 w-8 text-white" />
             </div>
             <h1
               className={`text-3xl sm:text-4xl font-bold mb-2 transition-colors ${
