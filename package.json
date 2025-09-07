@@ -6,8 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:staging": "vite build --mode staging",
+    "build:production": "vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:staging": "npm run build:staging && firebase use staging && firebase deploy",
+    "deploy:production": "npm run build:production && firebase use production && firebase deploy",
+    "test": "echo 'No tests specified' && exit 0",
+    "test:staging": "npm run build:staging && npm run test"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
