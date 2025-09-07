@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "mandal-app-87305",
+    "default": "mandal-app-dev",
     "prod": "mandal-app-87305",
     "staging": "mandal-app-staging",
     "dev": "mandal-app-dev"
