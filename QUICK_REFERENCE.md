@@ -31,6 +31,24 @@ npm run reset:staging    # Staging
 npm run deploy:staging   # Deploy to staging
 ```
 
+## 🛡️ **Safe Development Workflow**
+
+### **Quick Start**
+```bash
+# 1. Start from develop branch
+git checkout develop
+git pull origin develop
+
+# 2. Create feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Start development
+npm run dev
+```
+
+### **Complete Workflow**
+For detailed workflow instructions, see **[SAFE_WORKFLOW_GUIDE.md](./SAFE_WORKFLOW_GUIDE.md)**
+
 ## 🚀 Daily Commands
 
 ### **Start Development**

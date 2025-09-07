@@ -13,6 +13,7 @@ A modern, full-stack donation management application for the **श्रीर�
 This project uses a **multi-environment development workflow** for safe production development:
 
 - **[📖 DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)** - Complete development workflow and setup
+- **[🛡️ SAFE_WORKFLOW_GUIDE.md](./SAFE_WORKFLOW_GUIDE.md)** - Safe development workflow and best practices
 - **[🔧 ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)** - Set up authentication, database, and dummy data
 - **[🗄️ STORAGE_ALTERNATIVES.md](./STORAGE_ALTERNATIVES.md)** - Free storage solutions for images and files
 - **[🧪 TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive testing instructions and checklists
