@@ -1,5 +1,36 @@
 # ⚡ Quick Reference Guide
 
+## 🧪 **Quick Testing**
+
+### **Environment URLs**
+- **Development**: http://localhost:5173/ (run `npm run dev`)
+- **Staging**: https://mandal-app-staging.web.app
+- **Production**: https://mandal-app-87305.web.app
+
+### **Test Accounts**
+| Role | Email | Password | Access |
+|------|-------|----------|--------|
+| **Admin** | admin@mandal.com | admin123 | Full access |
+| **Volunteer** | volunteer@mandal.com | volunteer123 | Dashboard access |
+| **Public** | user@mandal.com | user123 | Home page only |
+
+### **Quick Test Commands**
+```bash
+# Start development
+npm run dev
+
+# Set up dummy data
+npm run setup:dev        # Development
+npm run setup:staging    # Staging
+
+# Clear and reset data
+npm run reset:dev        # Development
+npm run reset:staging    # Staging
+
+# Deploy
+npm run deploy:staging   # Deploy to staging
+```
+
 ## 🚀 Daily Commands
 
 ### **Start Development**

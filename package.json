@@ -13,7 +13,13 @@
     "deploy:staging": "npm run build:staging && firebase use staging && firebase deploy",
     "deploy:production": "npm run build:production && firebase use production && firebase deploy",
     "test": "echo 'No tests specified' && exit 0",
-    "test:staging": "npm run build:staging && npm run test"
+    "test:staging": "npm run build:staging && npm run test",
+    "setup:dev": "node scripts/setup-dummy-data.js dev",
+    "setup:staging": "node scripts/setup-dummy-data.js staging",
+    "clear:dev": "node scripts/clear-dummy-data.js dev",
+    "clear:staging": "node scripts/clear-dummy-data.js staging",
+    "reset:dev": "npm run clear:dev && npm run setup:dev",
+    "reset:staging": "npm run clear:staging && npm run setup:staging"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",

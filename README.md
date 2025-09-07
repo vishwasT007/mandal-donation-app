@@ -13,14 +13,22 @@ A modern, full-stack donation management application for the **श्रीर�
 This project uses a **multi-environment development workflow** for safe production development:
 
 - **[📖 DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)** - Complete development workflow and setup
+- **[🔧 ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)** - Set up authentication, database, and dummy data
+- **[🗄️ STORAGE_ALTERNATIVES.md](./STORAGE_ALTERNATIVES.md)** - Free storage solutions for images and files
+- **[🧪 TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive testing instructions and checklists
 - **[⚡ QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Daily commands and quick reference
 - **[📋 DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Safe deployment procedures
 - **[🔧 TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
 
 ### **Environments**
-- **Development**: `mandal-app-dev` (Local development)
-- **Staging**: `mandal-app-staging` (Testing environment)
-- **Production**: `mandal-app-87305` (Live application)
+- **Development**: `mandal-app-dev` (Local development) - http://localhost:5173/
+- **Staging**: `mandal-app-staging` (Testing environment) - https://mandal-app-staging.web.app
+- **Production**: `mandal-app-87305` (Live application) - https://mandal-app-87305.web.app
+
+### **🚀 Quick Testing**
+- **Development**: http://localhost:5173/ (run `npm run dev`)
+- **Staging**: https://mandal-app-staging.web.app
+- **Test Accounts**: admin@mandal.com / admin123 (admin), volunteer@mandal.com / volunteer123 (volunteer), user@mandal.com / user123 (public)
 
 ## ✨ Features
 
