@@ -4,8 +4,23 @@ A modern, full-stack donation management application for the **श्रीर�
 
 ## 🌟 Live Application
 
-**🌐 Production URL:** www.tiroracharaja.in
+**🌐 Production URL:** www.tiroracharaja.in  
+**🧪 Staging URL:** https://mandal-app-staging.web.app  
 **🔗 Firebase Console:** https://console.firebase.google.com/project/mandal-app-87305/overview
+
+## 📚 Development Documentation
+
+This project uses a **multi-environment development workflow** for safe production development:
+
+- **[📖 DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)** - Complete development workflow and setup
+- **[⚡ QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Daily commands and quick reference
+- **[📋 DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)** - Safe deployment procedures
+- **[🔧 TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
+
+### **Environments**
+- **Development**: `mandal-app-dev` (Local development)
+- **Staging**: `mandal-app-staging` (Testing environment)
+- **Production**: `mandal-app-87305` (Live application)
 
 ## ✨ Features
 
